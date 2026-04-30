@@ -8,39 +8,93 @@ namespace SistemaMonitorizacionRed
 {
     public partial class HistorialAlertas : Form
     {
-        // Cadena de conexión a MySQL (igual que en Form1)
         private string connectionString = "Server=localhost;Database=monitorizacion_red;Uid=root;Pwd=;";
 
         public HistorialAlertas()
         {
             InitializeComponent();
+            // Configurar DataGridView
+            dgvAlertas.AutoGenerateColumns = false;
+            dgvAlertas.ReadOnly = true;
+            dgvAlertas.AllowUserToAddRows = false;
+            dgvAlertas.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvAlertas.MultiSelect = false;
+            dgvAlertas.RowHeadersVisible = false;
+            dgvAlertas.BackgroundColor = Color.White;
+            dgvAlertas.BorderStyle = BorderStyle.Fixed3D;
+            dgvAlertas.GridColor = Color.LightGray;
+            dgvAlertas.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(0, 102, 204);
+            dgvAlertas.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dgvAlertas.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            dgvAlertas.EnableHeadersVisualStyles = false;
+            dgvAlertas.AlternatingRowsDefaultCellStyle.BackColor = Color.WhiteSmoke;
 
-            // Configurar combo box de severidad
+            // Configurar columnas
+            ConfigurarColumnas();
+
+            // Añadir evento para colorear filas según severidad
+            dgvAlertas.RowPrePaint += DgvAlertas_RowPrePaint;
+
+            // Cargar datos al iniciar
+            CargarAlertas();
+        }
+
+        private void ConfigurarColumnas()
+        {
+            dgvAlertas.Columns.Clear();
+
+            DataGridViewTextBoxColumn colId = new DataGridViewTextBoxColumn();
+            colId.Name = "id";
+            colId.HeaderText = "ID";
+            colId.Width = 50;
+            colId.DataPropertyName = "id";
+
+            DataGridViewTextBoxColumn colTipo = new DataGridViewTextBoxColumn();
+            colTipo.Name = "tipo";
+            colTipo.HeaderText = "Tipo";
+            colTipo.Width = 120;
+            colTipo.DataPropertyName = "tipo";
+
+            DataGridViewTextBoxColumn colDescripcion = new DataGridViewTextBoxColumn();
+            colDescripcion.Name = "descripcion";
+            colDescripcion.HeaderText = "Descripción";
+            colDescripcion.Width = 400;
+            colDescripcion.DataPropertyName = "descripcion";
+
+            DataGridViewTextBoxColumn colSeveridad = new DataGridViewTextBoxColumn();
+            colSeveridad.Name = "severidad";
+            colSeveridad.HeaderText = "Severidad";
+            colSeveridad.Width = 100;
+            colSeveridad.DataPropertyName = "severidad";
+
+            DataGridViewTextBoxColumn colIP = new DataGridViewTextBoxColumn();
+            colIP.Name = "ip_involucrada";
+            colIP.HeaderText = "IP Involucrada";
+            colIP.Width = 120;
+            colIP.DataPropertyName = "ip_involucrada";
+
+            DataGridViewTextBoxColumn colTimestamp = new DataGridViewTextBoxColumn();
+            colTimestamp.Name = "timestamp";
+            colTimestamp.HeaderText = "Fecha y Hora";
+            colTimestamp.Width = 150;
+            colTimestamp.DataPropertyName = "timestamp";
+
+            dgvAlertas.Columns.AddRange(new DataGridViewColumn[] { colId, colTipo, colDescripcion, colSeveridad, colIP, colTimestamp });
+        }
+
+        private void HistorialAlertas_Load(object sender, EventArgs e)
+        {
+            // Configurar ComboBox de severidad
             cmbFiltroSeveridad.Items.Clear();
             cmbFiltroSeveridad.Items.Add("Todas");
             cmbFiltroSeveridad.Items.Add("Baja");
             cmbFiltroSeveridad.Items.Add("Media");
             cmbFiltroSeveridad.Items.Add("Alta");
             cmbFiltroSeveridad.Items.Add("Crítica");
-            cmbFiltroSeveridad.SelectedIndex = 0; // "Todas" por defecto
+            cmbFiltroSeveridad.SelectedIndex = 0;
 
-            // Configurar DataGridView
-            ConfigurarDataGridView();
-        }
-
-        private void ConfigurarDataGridView()
-        {
-            dgvAlertas.ReadOnly = true;
-            dgvAlertas.AllowUserToAddRows = false;
-            dgvAlertas.AllowUserToDeleteRows = false;
-            dgvAlertas.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dgvAlertas.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvAlertas.MultiSelect = false;
-        }
-
-        private void HistorialAlertas_Load(object sender, EventArgs e)
-        {
-            CargarAlertas();
+            dtpFecha.Format = DateTimePickerFormat.Short;
+            dtpFecha.Value = DateTime.Today;
         }
 
         private void CargarAlertas()
@@ -50,18 +104,14 @@ namespace SistemaMonitorizacionRed
                 using (MySqlConnection conn = new MySqlConnection(connectionString))
                 {
                     conn.Open();
-
-                    // Construir consulta SQL con filtros
                     string query = "SELECT id, tipo, descripcion, severidad, ip_involucrada, timestamp FROM alertas WHERE 1=1";
 
-                    // Filtro por severidad
-                    if (cmbFiltroSeveridad.SelectedIndex > 0) // No es "Todas"
+                    if (cmbFiltroSeveridad.SelectedIndex > 0)
                     {
                         string severidad = cmbFiltroSeveridad.SelectedItem.ToString();
                         query += $" AND severidad = '{severidad}'";
                     }
 
-                    // Filtro por fecha (si está activo)
                     if (chkFiltrarFecha.Checked)
                     {
                         string fecha = dtpFecha.Value.ToString("yyyy-MM-dd");
@@ -75,75 +125,49 @@ namespace SistemaMonitorizacionRed
                     adapter.Fill(dt);
 
                     dgvAlertas.DataSource = dt;
-
-                    // Configurar títulos de columnas amigables
-                    if (dgvAlertas.Columns.Count > 0)
-                    {
-                        dgvAlertas.Columns["id"].HeaderText = "ID";
-                        dgvAlertas.Columns["tipo"].HeaderText = "Tipo";
-                        dgvAlertas.Columns["descripcion"].HeaderText = "Descripción";
-                        dgvAlertas.Columns["severidad"].HeaderText = "Severidad";
-                        dgvAlertas.Columns["ip_involucrada"].HeaderText = "IP Involucrada";
-                        dgvAlertas.Columns["timestamp"].HeaderText = "Fecha y Hora";
-
-                        // Ajustar anchos
-                        dgvAlertas.Columns["id"].Width = 50;
-                        dgvAlertas.Columns["tipo"].Width = 100;
-                        dgvAlertas.Columns["descripcion"].Width = 300;
-                        dgvAlertas.Columns["severidad"].Width = 80;
-                        dgvAlertas.Columns["ip_involucrada"].Width = 120;
-                        dgvAlertas.Columns["timestamp"].Width = 130;
-
-                        // Colorear filas según severidad
-                        dgvAlertas.CellFormatting += DgvAlertas_CellFormatting;
-                    }
-
                     lblTotal.Text = $"Total: {dt.Rows.Count} alertas";
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error al cargar alertas: " + ex.Message, "Error",
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Error al cargar alertas: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        private void DgvAlertas_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        // Evento para colorear filas según severidad
+        private void DgvAlertas_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
         {
-            // Colorear filas según severidad
-            if (e.RowIndex >= 0 && dgvAlertas.Rows[e.RowIndex].Cells["severidad"].Value != null)
+            if (e.RowIndex < 0) return;
+            DataGridViewRow row = dgvAlertas.Rows[e.RowIndex];
+            if (row.Cells["severidad"].Value == null) return;
+
+            string severidad = row.Cells["severidad"].Value.ToString();
+            switch (severidad)
             {
-                string severidad = dgvAlertas.Rows[e.RowIndex].Cells["severidad"].Value.ToString();
-
-                switch (severidad)
-                {
-                    case "Crítica":
-                        dgvAlertas.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.DarkRed;
-                        dgvAlertas.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.White;
-                        break;
-                    case "Alta":
-                        dgvAlertas.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.LightCoral;
-                        break;
-                    case "Media":
-                        dgvAlertas.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.LightYellow;
-                        break;
-                    case "Baja":
-                        dgvAlertas.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.LightGreen;
-                        break;
-                }
-            }
-        }
-
-        private void chkFiltrarFecha_CheckedChanged(object sender, EventArgs e)
-        {
-            // Habilitar/deshabilitar el DateTimePicker según el CheckBox
-            dtpFecha.Enabled = chkFiltrarFecha.Checked;
-            lblFecha.Visible = chkFiltrarFecha.Checked;
-
-            // Si se desactiva, recargar sin filtro de fecha
-            if (!chkFiltrarFecha.Checked)
-            {
-                CargarAlertas();
+                case "Baja":
+                    row.DefaultCellStyle.BackColor = Color.LightGreen;
+                    row.DefaultCellStyle.ForeColor = Color.Black;
+                    break;
+                case "Media":
+                    row.DefaultCellStyle.BackColor = Color.LightYellow;
+                    row.DefaultCellStyle.ForeColor = Color.Black;
+                    break;
+                case "Alta":
+                    row.DefaultCellStyle.BackColor = Color.LightCoral;
+                    row.DefaultCellStyle.ForeColor = Color.Black;
+                    break;
+                case "Crítica":
+                    row.DefaultCellStyle.BackColor = Color.DarkRed;
+                    row.DefaultCellStyle.ForeColor = Color.White;
+                    break;
+                default:
+                    // Restaurar colores por defecto (alternados)
+                    if (e.RowIndex % 2 == 0)
+                        row.DefaultCellStyle.BackColor = Color.White;
+                    else
+                        row.DefaultCellStyle.BackColor = Color.WhiteSmoke;
+                    row.DefaultCellStyle.ForeColor = Color.Black;
+                    break;
             }
         }
 
@@ -157,9 +181,18 @@ namespace SistemaMonitorizacionRed
             this.Close();
         }
 
+        private void chkFiltrarFecha_CheckedChanged(object sender, EventArgs e)
+        {
+            dtpFecha.Enabled = chkFiltrarFecha.Checked;
+            lblFecha.Visible = chkFiltrarFecha.Checked;
+            if (!chkFiltrarFecha.Checked)
+            {
+                CargarAlertas();
+            }
+        }
+
         private void dgvAlertas_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            // Al hacer doble clic en una alerta, mostrar detalles completos
             if (e.RowIndex >= 0)
             {
                 DataGridViewRow row = dgvAlertas.Rows[e.RowIndex];
@@ -169,10 +202,13 @@ namespace SistemaMonitorizacionRed
                                  $"IP: {row.Cells["ip_involucrada"].Value}\n" +
                                  $"Fecha: {row.Cells["timestamp"].Value}\n\n" +
                                  $"Descripción:\n{row.Cells["descripcion"].Value}";
-
-                MessageBox.Show(detalles, "Detalles de la Alerta",
-                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(detalles, "Detalles de la Alerta", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+        }
+
+        private void dgvAlertas_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            // No se necesita acción, pero el evento debe existir
         }
     }
 }

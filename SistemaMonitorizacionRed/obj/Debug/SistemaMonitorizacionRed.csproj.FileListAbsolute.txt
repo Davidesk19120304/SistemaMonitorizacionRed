@@ -39,7 +39,6 @@ C:\Users\Guillermo David\source\repos\SistemaMonitorizacionRed\SistemaMonitoriza
 C:\Users\Guillermo David\source\repos\SistemaMonitorizacionRed\SistemaMonitorizacionRed\bin\Debug\System.Text.Encoding.CodePages.xml
 C:\Users\Guillermo David\source\repos\SistemaMonitorizacionRed\SistemaMonitorizacionRed\bin\Debug\System.Threading.Tasks.Extensions.xml
 C:\Users\Guillermo David\source\repos\SistemaMonitorizacionRed\SistemaMonitorizacionRed\obj\Debug\SistemaMonitorizacionRed.csproj.AssemblyReference.cache
-C:\Users\Guillermo David\source\repos\SistemaMonitorizacionRed\SistemaMonitorizacionRed\obj\Debug\SistemaMonitorizacionRed.Form1.resources
 C:\Users\Guillermo David\source\repos\SistemaMonitorizacionRed\SistemaMonitorizacionRed\obj\Debug\SistemaMonitorizacionRed.Properties.Resources.resources
 C:\Users\Guillermo David\source\repos\SistemaMonitorizacionRed\SistemaMonitorizacionRed\obj\Debug\SistemaMonitorizacionRed.csproj.GenerateResource.cache
 C:\Users\Guillermo David\source\repos\SistemaMonitorizacionRed\SistemaMonitorizacionRed\obj\Debug\SistemaMonitorizacionRed.csproj.CoreCompileInputs.cache
@@ -53,3 +52,8 @@ C:\Users\Guillermo David\source\repos\SistemaMonitorizacionRed\SistemaMonitoriza
 C:\Users\Guillermo David\source\repos\SistemaMonitorizacionRed\SistemaMonitorizacionRed\bin\Debug\LiveCharts.Wpf.pdb
 C:\Users\Guillermo David\source\repos\SistemaMonitorizacionRed\SistemaMonitorizacionRed\bin\Debug\LiveCharts.Wpf.xml
 C:\Users\Guillermo David\source\repos\SistemaMonitorizacionRed\SistemaMonitorizacionRed\obj\Debug\SistemaMonitorizacionRed.HistorialAlertas.resources
+C:\Users\Guillermo David\source\repos\SistemaMonitorizacionRed\SistemaMonitorizacionRed\obj\Debug\SistemaMonitorizacionRed.FrmMain.resources
+C:\Users\Guillermo David\source\repos\SistemaMonitorizacionRed\SistemaMonitorizacionRed\obj\Debug\SistemaMonitorizacionRed.FrmIntroduccion.resources
+C:\Users\Guillermo David\source\repos\SistemaMonitorizacionRed\SistemaMonitorizacionRed\obj\Debug\SistemaMonitorizacionRed.FrmLogin.resources
+C:\Users\Guillermo David\source\repos\SistemaMonitorizacionRed\SistemaMonitorizacionRed\obj\Debug\SistemaMonitorizacionRed.FrmConfiguracionAlertas.resources
+C:\Users\Guillermo David\source\repos\SistemaMonitorizacionRed\SistemaMonitorizacionRed\obj\Debug\SistemaMonitorizacionRed.FrmToast.resources

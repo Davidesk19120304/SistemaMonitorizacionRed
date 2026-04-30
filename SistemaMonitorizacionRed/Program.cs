@@ -3,17 +3,32 @@ using System.Windows.Forms;
 
 namespace SistemaMonitorizacionRed
 {
-    static class Program
+    internal static class Program
     {
-        /// <summary>
-        /// Punto de entrada principal para la aplicación.
-        /// </summary>
         [STAThread]
         static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+
+            // Mostrar pantalla de carga (se cierra automáticamente después de 3 segundos)
+            using (FrmIntroduccion splash = new FrmIntroduccion())
+            {
+                splash.ShowDialog(); // Bloquea hasta que se cierre el splash
+            }
+
+            // Ahora mostrar el login
+            using (FrmLogin login = new FrmLogin())
+            {
+                login.ShowDialog();
+
+                if (login.LoginExitoso)
+                {
+                    // Iniciar la aplicación principal
+                    Application.Run(new FrmMain(login.UsuarioActual, login.RolActual));
+                }
+                // Si el login falla, la aplicación termina
+            }
         }
     }
 }

@@ -117,11 +117,15 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="monitoreo_de_red" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\monitoreo-de-red.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="LOGO" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\LOGO.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="lblDescripcion.Text" xml:space="preserve">
+    <value>Bienvenido al sistema de análisis y monitorización de tráfico de red.
+
+Este sistema permite capturar paquetes en tiempo real, detectar anomalías como escaneo de puertos, fuerza bruta, ICMP flood, picos de tráfico y escaneo vertical.
+
+Además, genera alertas configurables, almacena los datos en MySQL y ofrece reportes exportables a CSV.
+
+Utilice la interfaz para seleccionar la interfaz de red, iniciar captura y analizar el tráfico.
+
+El sistema cargará automáticamente la pantalla de acceso en unos segundos.</value>
   </data>
 </root>
