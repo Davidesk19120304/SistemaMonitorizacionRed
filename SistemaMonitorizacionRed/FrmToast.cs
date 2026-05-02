@@ -38,25 +38,33 @@ namespace SistemaMonitorizacionRed
 
         private void InitializeComponent()
         {
-            this.lblMensaje = new Label();
+            this.lblMensaje = new System.Windows.Forms.Label();
             this.SuspendLayout();
-
+            // 
             // lblMensaje
-            this.lblMensaje.AutoSize = false;
-            this.lblMensaje.Dock = DockStyle.Fill;
-            this.lblMensaje.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            this.lblMensaje.ForeColor = Color.White;
-            this.lblMensaje.TextAlign = ContentAlignment.MiddleCenter;
-            this.lblMensaje.Padding = new Padding(10);
-
+            // 
+            this.lblMensaje.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblMensaje.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblMensaje.ForeColor = System.Drawing.Color.White;
+            this.lblMensaje.Location = new System.Drawing.Point(0, 0);
+            this.lblMensaje.Name = "lblMensaje";
+            this.lblMensaje.Padding = new System.Windows.Forms.Padding(10);
+            this.lblMensaje.Size = new System.Drawing.Size(350, 60);
+            this.lblMensaje.TabIndex = 0;
+            this.lblMensaje.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblMensaje.Click += new System.EventHandler(this.lblMensaje_Click);
+            // 
             // FrmToast
-            this.FormBorderStyle = FormBorderStyle.None;
-            this.StartPosition = FormStartPosition.Manual;
-            this.TopMost = true;
-            this.ShowInTaskbar = false;
-            this.Size = new Size(350, 60);
+            // 
+            this.ClientSize = new System.Drawing.Size(350, 60);
             this.Controls.Add(this.lblMensaje);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Name = "FrmToast";
+            this.ShowInTaskbar = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
+            this.TopMost = true;
             this.ResumeLayout(false);
+
         }
 
         protected override void OnLoad(EventArgs e)
@@ -125,6 +133,11 @@ namespace SistemaMonitorizacionRed
             {
                 new FrmToast(mensaje, colorFondo, duracionMs).Show();
             }
+        }
+
+        private void lblMensaje_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -62,5 +62,23 @@ namespace SistemaMonitorizacionRed
             timer.Tick += (s, e) => { timer.Stop(); this.Close(); };
             timer.Start();
         }
+
+        private void InitializeComponent()
+        {
+            this.SuspendLayout();
+            // 
+            // FrmIntroduccion
+            // 
+            this.ClientSize = new System.Drawing.Size(284, 261);
+            this.Name = "FrmIntroduccion";
+            this.Load += new System.EventHandler(this.FrmIntroduccion_Load);
+            this.ResumeLayout(false);
+
+        }
+
+        private void FrmIntroduccion_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }
