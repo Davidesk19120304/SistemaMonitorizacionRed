@@ -1,0 +1,706 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>PdfSharp.BarCodes</name>
+    </assembly>
+    <members>
+        <member name="T:PdfSharp.Drawing.BarCodes.BarCode">
+            <summary>
+            Represents the base class of all bar codes.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.BarCode.#ctor(System.String,PdfSharp.Drawing.XSize,PdfSharp.Drawing.BarCodes.CodeDirection)">
+            <summary>
+            Initializes a new instance of the <see cref="T:PdfSharp.Drawing.BarCodes.BarCode"/> class.
+            </summary>
+            <param name="text"></param>
+            <param name="size"></param>
+            <param name="direction"></param>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.BarCode.FromType(PdfSharp.Drawing.BarCodes.CodeType,System.String,PdfSharp.Drawing.XSize,PdfSharp.Drawing.BarCodes.CodeDirection)">
+            <summary>
+            Creates a bar code from the specified code type.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.BarCode.FromType(PdfSharp.Drawing.BarCodes.CodeType,System.String,PdfSharp.Drawing.XSize)">
+            <summary>
+            Creates a bar code from the specified code type.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.BarCode.FromType(PdfSharp.Drawing.BarCodes.CodeType,System.String)">
+            <summary>
+            Creates a bar code from the specified code type.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.BarCode.FromType(PdfSharp.Drawing.BarCodes.CodeType)">
+            <summary>
+            Creates a bar code from the specified code type.
+            </summary>
+        </member>
+        <member name="P:PdfSharp.Drawing.BarCodes.BarCode.WideNarrowRatio">
+            <summary>
+            When overridden in a derived class gets or sets the wide narrow ratio.
+            </summary>
+        </member>
+        <member name="P:PdfSharp.Drawing.BarCodes.BarCode.TextLocation">
+            <summary>
+            Gets or sets the location of the text next to the bar code.
+            </summary>
+        </member>
+        <member name="P:PdfSharp.Drawing.BarCodes.BarCode.DataLength">
+            <summary>
+            Gets or sets the length of the data that defines the bar code.
+            </summary>
+        </member>
+        <member name="P:PdfSharp.Drawing.BarCodes.BarCode.StartChar">
+            <summary>
+            Gets or sets the optional start character.
+            </summary>
+        </member>
+        <member name="P:PdfSharp.Drawing.BarCodes.BarCode.EndChar">
+            <summary>
+            Gets or sets the optional end character.
+            </summary>
+        </member>
+        <member name="P:PdfSharp.Drawing.BarCodes.BarCode.TurboBit">
+            <summary>
+            Gets or sets a value indicating whether the turbo bit is to be drawn.
+            (A turbo bit is something special to Kern (computer output processing) company (as far as I know))
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.BarCode.Render(PdfSharp.Drawing.XGraphics,PdfSharp.Drawing.XBrush,PdfSharp.Drawing.XFont,PdfSharp.Drawing.XPoint)">
+            <summary>
+            When defined in a derived class renders the code.
+            </summary>
+        </member>
+        <member name="T:PdfSharp.Drawing.BarCodes.BarCodeRenderInfo">
+            <summary>
+            Holds all temporary information needed during rendering.
+            </summary>
+        </member>
+        <member name="T:PdfSharp.Drawing.BarCodes.BcgSR">
+            <summary>
+            String resources for the empira barcode renderer.
+            </summary>
+        </member>
+        <member name="T:PdfSharp.Drawing.BarCodes.Code2of5Interleaved">
+            <summary>
+            Implementation of the Code 2 of 5 bar code.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.Code2of5Interleaved.#ctor">
+            <summary>
+            Initializes a new instance of Interleaved2of5.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.Code2of5Interleaved.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of Interleaved2of5.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.Code2of5Interleaved.#ctor(System.String,PdfSharp.Drawing.XSize)">
+            <summary>
+            Initializes a new instance of Interleaved2of5.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.Code2of5Interleaved.#ctor(System.String,PdfSharp.Drawing.XSize,PdfSharp.Drawing.BarCodes.CodeDirection)">
+            <summary>
+            Initializes a new instance of Interleaved2of5.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.Code2of5Interleaved.ThickAndThinLines(System.Int32)">
+            <summary>
+            Returns an array of size 5 that represents the thick (true) and thin (false) lines or spaces
+            representing the specified digit.
+            </summary>
+            <param name="digit">The digit to represent.</param>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.Code2of5Interleaved.Render(PdfSharp.Drawing.XGraphics,PdfSharp.Drawing.XBrush,PdfSharp.Drawing.XFont,PdfSharp.Drawing.XPoint)">
+            <summary>
+            Renders the bar code.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.Code2of5Interleaved.CalcThinBarWidth(PdfSharp.Drawing.BarCodes.BarCodeRenderInfo)">
+            <summary>
+            Calculates the thick and thin line widths,
+            taking into account the required rendering size.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.Code2of5Interleaved.RenderNextPair(PdfSharp.Drawing.BarCodes.BarCodeRenderInfo)">
+            <summary>
+            Renders the next digit pair as bar code element.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.Code2of5Interleaved.CheckCode(System.String)">
+            <summary>
+            Checks the code to be convertible into an interleaved 2 of 5 bar code.
+            </summary>
+            <param name="text">The code to be checked.</param>
+        </member>
+        <member name="T:PdfSharp.Drawing.BarCodes.Code3of9Standard">
+            <summary>
+            Implementation of the Code 3 of 9 bar code.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.Code3of9Standard.#ctor">
+            <summary>
+            Initializes a new instance of Standard3of9.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.Code3of9Standard.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of Standard3of9.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.Code3of9Standard.#ctor(System.String,PdfSharp.Drawing.XSize)">
+            <summary>
+            Initializes a new instance of Standard3of9.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.Code3of9Standard.#ctor(System.String,PdfSharp.Drawing.XSize,PdfSharp.Drawing.BarCodes.CodeDirection)">
+            <summary>
+            Initializes a new instance of Standard3of9.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.Code3of9Standard.ThickThinLines(System.Char)">
+            <summary>
+            Returns an array of size 9 that represents the thick (true) and thin (false) lines and spaces
+            representing the specified digit.
+            </summary>
+            <param name="ch">The character to represent.</param>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.Code3of9Standard.CalcThinBarWidth(PdfSharp.Drawing.BarCodes.BarCodeRenderInfo)">
+            <summary>
+            Calculates the thick and thin line widths,
+            taking into account the required rendering size.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.Code3of9Standard.CheckCode(System.String)">
+            <summary>
+            Checks the code to be convertible into a standard 3 of 9 bar code.
+            </summary>
+            <param name="text">The code to be checked.</param>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.Code3of9Standard.Render(PdfSharp.Drawing.XGraphics,PdfSharp.Drawing.XBrush,PdfSharp.Drawing.XFont,PdfSharp.Drawing.XPoint)">
+            <summary>
+            Renders the bar code.
+            </summary>
+        </member>
+        <member name="T:PdfSharp.Drawing.BarCodes.CodeBase">
+            <summary>
+            Represents the base class of all codes.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.CodeBase.#ctor(System.String,PdfSharp.Drawing.XSize,PdfSharp.Drawing.BarCodes.CodeDirection)">
+            <summary>
+            Initializes a new instance of the <see cref="T:PdfSharp.Drawing.BarCodes.CodeBase"/> class.
+            </summary>
+        </member>
+        <member name="P:PdfSharp.Drawing.BarCodes.CodeBase.Size">
+            <summary>
+            Gets or sets the size.
+            </summary>
+        </member>
+        <member name="P:PdfSharp.Drawing.BarCodes.CodeBase.Text">
+            <summary>
+            Gets or sets the text the bar code shall represent.
+            </summary>
+        </member>
+        <member name="P:PdfSharp.Drawing.BarCodes.CodeBase.Anchor">
+            <summary>
+            Always MiddleCenter.
+            </summary>
+        </member>
+        <member name="P:PdfSharp.Drawing.BarCodes.CodeBase.Direction">
+            <summary>
+            Gets or sets the drawing direction.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.CodeBase.CheckCode(System.String)">
+            <summary>
+            When implemented in a derived class, determines whether the specified string can be used as Text
+            for this bar code type.
+            </summary>
+            <param name="text">The code string to check.</param>
+            <returns>True if the text can be used for the actual barcode.</returns>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.CodeBase.CalcDistance(PdfSharp.Drawing.BarCodes.AnchorType,PdfSharp.Drawing.BarCodes.AnchorType,PdfSharp.Drawing.XSize)">
+            <summary>
+            Calculates the distance between an old anchor point and a new anchor point.
+            </summary>
+            <param name="oldType"></param>
+            <param name="newType"></param>
+            <param name="size"></param>
+        </member>
+        <member name="T:PdfSharp.Drawing.BarCodes.CodeDataMatrix">
+            <summary>
+            Defines the DataMatrix 2D barcode. THIS IS AN EMPIRA INTERNAL IMPLEMENTATION. THE CODE IN
+            THE OPEN SOURCE VERSION IS A FAKE.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.CodeDataMatrix.#ctor">
+            <summary>
+            Initializes a new instance of CodeDataMatrix.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.CodeDataMatrix.#ctor(System.String,System.Int32)">
+            <summary>
+            Initializes a new instance of CodeDataMatrix.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.CodeDataMatrix.#ctor(System.String,System.Int32,PdfSharp.Drawing.XSize)">
+            <summary>
+            Initializes a new instance of CodeDataMatrix.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.CodeDataMatrix.#ctor(System.String,PdfSharp.Drawing.BarCodes.DataMatrixEncoding,System.Int32,PdfSharp.Drawing.XSize)">
+            <summary>
+            Initializes a new instance of CodeDataMatrix.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.CodeDataMatrix.#ctor(System.String,System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of CodeDataMatrix.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.CodeDataMatrix.#ctor(System.String,System.Int32,System.Int32,PdfSharp.Drawing.XSize)">
+            <summary>
+            Initializes a new instance of CodeDataMatrix.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.CodeDataMatrix.#ctor(System.String,PdfSharp.Drawing.BarCodes.DataMatrixEncoding,System.Int32,System.Int32,PdfSharp.Drawing.XSize)">
+            <summary>
+            Initializes a new instance of CodeDataMatrix.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.CodeDataMatrix.#ctor(System.String,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of CodeDataMatrix.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.CodeDataMatrix.#ctor(System.String,System.String,System.Int32,System.Int32,System.Int32,PdfSharp.Drawing.XSize)">
+            <summary>
+            Initializes a new instance of CodeDataMatrix.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.CodeDataMatrix.SetEncoding(PdfSharp.Drawing.BarCodes.DataMatrixEncoding)">
+            <summary>
+            Sets the encoding of the DataMatrix.
+            </summary>
+        </member>
+        <member name="P:PdfSharp.Drawing.BarCodes.CodeDataMatrix.QuietZone">
+            <summary>
+            Gets or sets the size of the Matrix¹ Quiet Zone.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.CodeDataMatrix.Render(PdfSharp.Drawing.XGraphics,PdfSharp.Drawing.XBrush,PdfSharp.Drawing.XPoint)">
+            <summary>
+            Renders the matrix code.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.CodeDataMatrix.CheckCode(System.String)">
+            <summary>
+            Determines whether the specified string can be used as data in the DataMatrix.
+            </summary>
+            <param name="text">The code to be checked.</param>
+        </member>
+        <member name="T:PdfSharp.Drawing.BarCodes.CodeOmr">
+            <summary>
+            Represents an OMR code.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.CodeOmr.#ctor(System.String,PdfSharp.Drawing.XSize,PdfSharp.Drawing.BarCodes.CodeDirection)">
+            <summary>
+            Initializes a new OmrCode with the given data.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.CodeOmr.Render(PdfSharp.Drawing.XGraphics,PdfSharp.Drawing.XBrush,PdfSharp.Drawing.XFont,PdfSharp.Drawing.XPoint)">
+            <summary>
+            Renders the OMR code.
+            </summary>
+        </member>
+        <member name="P:PdfSharp.Drawing.BarCodes.CodeOmr.SynchronizeCode">
+            <summary>
+            Gets or sets a value indicating whether a synchronize mark is rendered.
+            </summary>
+        </member>
+        <member name="P:PdfSharp.Drawing.BarCodes.CodeOmr.MakerDistance">
+            <summary>
+            Gets or sets the distance of the markers.
+            </summary>
+        </member>
+        <member name="P:PdfSharp.Drawing.BarCodes.CodeOmr.MakerThickness">
+            <summary>
+            Gets or sets the thickness of the markers.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.CodeOmr.CheckCode(System.String)">
+            <summary>
+            Determines whether the specified string can be used as Text for the OMR code.
+            </summary>
+        </member>
+        <member name="T:PdfSharp.Drawing.BarCodes.DataMatrixImage">
+            <summary>
+            Creates the XImage object for a DataMatrix.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Drawing.BarCodes.DataMatrixImage.ecc200Sizes">
+            <summary>
+            Possible ECC200 Matrices.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.DataMatrixImage.DataMatrix">
+            <summary>
+            Creates the DataMatrix code.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.DataMatrixImage.Iec16022Ecc200(System.Int32,System.Int32,System.String,System.Int32,System.String,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Encodes the DataMatrix.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.DataMatrixImage.Ecc200Encode(System.Char[]@,System.Int32,System.String,System.Int32,System.String,System.Int32@)">
+            <summary>
+            Encodes the barcode with the DataMatrix ECC200 Encoding.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.DataMatrixImage.Ecc200Placement(System.Int32[]@,System.Int32,System.Int32)">
+            <summary>
+            Places the data in the right positions according to Annex M of the ECC200 specification.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.DataMatrixImage.Ecc200PlacementBit(System.Int32[]@,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Places the ECC200 bits in the right positions.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.DataMatrixImage.Ecc200(System.Char[],System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Calculate and append the Reed Solomon Code.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.DataMatrixImage.InitGalois(System.Int32)">
+            <summary>
+            Initialize the Galois Field.
+            </summary>
+            <param name="poly"></param>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.DataMatrixImage.InitReedSolomon(System.Int32,System.Int32)">
+            <summary>
+            Initializes the Reed-Solomon Encoder.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.DataMatrixImage.EncodeReedSolomon(System.Int32,System.Int32[],System.Int32[]@)">
+            <summary>
+            Encodes the Reed-Solomon encoding.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.DataMatrixImage.CreateImage(System.Char[],System.Int32)">
+            <summary>
+            Creates a DataMatrix image object.
+            </summary>
+            <param name="code">A hex string like "AB 08 C3...".</param>
+            <param name="size">I.e. 26 for a 26x26 matrix</param>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.DataMatrixImage.CreateImage(System.Char[],System.Int32,System.Int32)">
+            <summary>
+            Creates a DataMatrix image object.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.DataMatrixImage.CreateImage(System.Char[],System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Creates a DataMatrix image object.
+            </summary>
+        </member>
+        <member name="T:PdfSharp.Drawing.BarCodes.AnchorType">
+            <summary>
+            Specifies whether and how the text is displayed at the code area.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Drawing.BarCodes.AnchorType.TopLeft">
+            <summary>
+            The anchor is located top left.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Drawing.BarCodes.AnchorType.TopCenter">
+            <summary>
+            The anchor is located top center.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Drawing.BarCodes.AnchorType.TopRight">
+            <summary>
+            The anchor is located top right.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Drawing.BarCodes.AnchorType.MiddleLeft">
+            <summary>
+            The anchor is located middle left.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Drawing.BarCodes.AnchorType.MiddleCenter">
+            <summary>
+            The anchor is located middle center.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Drawing.BarCodes.AnchorType.MiddleRight">
+            <summary>
+            The anchor is located middle right.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Drawing.BarCodes.AnchorType.BottomLeft">
+            <summary>
+            The anchor is located bottom left.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Drawing.BarCodes.AnchorType.BottomCenter">
+            <summary>
+            The anchor is located bottom center.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Drawing.BarCodes.AnchorType.BottomRight">
+            <summary>
+            The anchor is located bottom right.
+            </summary>
+        </member>
+        <member name="T:PdfSharp.Drawing.BarCodes.CodeDirection">
+            <summary>
+            Specifies the drawing direction of the code.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Drawing.BarCodes.CodeDirection.LeftToRight">
+            <summary>
+            Does not rotate the code.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Drawing.BarCodes.CodeDirection.BottomToTop">
+            <summary>
+            Rotates the code 180° at the anchor position.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Drawing.BarCodes.CodeDirection.RightToLeft">
+            <summary>
+            Rotates the code 180° at the anchor position.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Drawing.BarCodes.CodeDirection.TopToBottom">
+            <summary>
+            Rotates the code 180° at the anchor position.
+            </summary>
+        </member>
+        <member name="T:PdfSharp.Drawing.BarCodes.CodeType">
+            <summary>
+            Specifies the type of the bar code.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Drawing.BarCodes.CodeType.Code2of5Interleaved">
+            <summary>
+            The standard 2 of 5 interleaved bar code.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Drawing.BarCodes.CodeType.Code3of9Standard">
+            <summary>
+            The standard 3 of 9 bar code.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Drawing.BarCodes.CodeType.Omr">
+            <summary>
+            The OMR code.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Drawing.BarCodes.CodeType.DataMatrix">
+            <summary>
+            The data matrix code.
+            </summary>
+        </member>
+        <member name="T:PdfSharp.Drawing.BarCodes.DataMatrixEncoding">
+            <summary>
+            The encoding used for data in the data matrix code.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Drawing.BarCodes.DataMatrixEncoding.Ascii">
+            <summary>
+            ASCII text mode.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Drawing.BarCodes.DataMatrixEncoding.C40">
+            <summary>
+            C40 text mode, potentially more compact for short strings.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Drawing.BarCodes.DataMatrixEncoding.Text">
+            <summary>
+            Text mode.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Drawing.BarCodes.DataMatrixEncoding.X12">
+            <summary>
+            X12 text mode, potentially more compact for short strings.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Drawing.BarCodes.DataMatrixEncoding.EDIFACT">
+            <summary>
+            EDIFACT mode uses six bits per character, with four characters packed into three bytes.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Drawing.BarCodes.DataMatrixEncoding.Base256">
+            <summary>
+            Base 256 mode data starts with a length indicator, followed by a number of data bytes.
+            A length of 1 to 249 is encoded as a single byte, and longer lengths are stored as two bytes.
+            </summary>
+        </member>
+        <member name="T:PdfSharp.Drawing.BarCodes.TextLocation">
+            <summary>
+            Specifies whether and how the text is displayed at the code.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Drawing.BarCodes.TextLocation.None">
+            <summary>
+            No text is drawn.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Drawing.BarCodes.TextLocation.Above">
+            <summary>
+            The text is located above the code.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Drawing.BarCodes.TextLocation.Below">
+            <summary>
+            The text is located below the code.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Drawing.BarCodes.TextLocation.AboveEmbedded">
+            <summary>
+            The text is located above within the code.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Drawing.BarCodes.TextLocation.BelowEmbedded">
+            <summary>
+            The text is located below within the code.
+            </summary>
+        </member>
+        <member name="T:PdfSharp.Drawing.BarCodes.MatrixCode">
+            <summary>
+            Represents the base class of all 2D codes.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.MatrixCode.#ctor(System.String,System.String,System.Int32,System.Int32,PdfSharp.Drawing.XSize)">
+            <summary>
+            Initializes a new instance of the <see cref="T:PdfSharp.Drawing.BarCodes.MatrixCode"/> class.
+            </summary>
+        </member>
+        <member name="P:PdfSharp.Drawing.BarCodes.MatrixCode.Encoding">
+            <summary>
+            Gets or sets the encoding.
+            </summary>
+        </member>
+        <member name="P:PdfSharp.Drawing.BarCodes.MatrixCode.Columns">
+            <summary>
+            Gets or sets the number of columns.
+            </summary>
+        </member>
+        <member name="P:PdfSharp.Drawing.BarCodes.MatrixCode.Rows">
+            <summary>
+            Gets or sets the number of rows.
+            </summary>
+        </member>
+        <member name="P:PdfSharp.Drawing.BarCodes.MatrixCode.Text">
+            <summary>
+            Gets or sets the text.
+            </summary>
+        </member>
+        <member name="P:PdfSharp.Drawing.BarCodes.MatrixCode.MatrixImage">
+            <summary>
+            Gets or sets the MatrixImage.
+            Getter throws if MatrixImage is null.
+            Use HasMatrixImage to test if image was created.
+            </summary>
+        </member>
+        <member name="P:PdfSharp.Drawing.BarCodes.MatrixCode.HasMatrixImage">
+            <summary>
+            MatrixImage throws if it is null. Here is a way to check if the image was created.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.MatrixCode.Render(PdfSharp.Drawing.XGraphics,PdfSharp.Drawing.XBrush,PdfSharp.Drawing.XPoint)">
+            <summary>
+            When implemented in a derived class renders the 2D code.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.MatrixCode.CheckCode(System.String)">
+            <summary>
+            Determines whether the specified string can be used as Text for this matrix code type.
+            </summary>
+        </member>
+        <member name="T:PdfSharp.Drawing.BarCodes.ThickThinBarCode">
+            <summary>
+            Internal base class for several bar code types.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.ThickThinBarCode.#ctor(System.String,PdfSharp.Drawing.XSize,PdfSharp.Drawing.BarCodes.CodeDirection)">
+            <summary>
+            Initializes a new instance of the <see cref="T:PdfSharp.Drawing.BarCodes.ThickThinBarCode"/> class.
+            </summary>
+        </member>
+        <member name="P:PdfSharp.Drawing.BarCodes.ThickThinBarCode.WideNarrowRatio">
+            <summary>
+            Gets or sets the ratio between thick and thin lines. Must be between 2 and 3.
+            Optimal and also default value is 2.6.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.ThickThinBarCode.RenderBar(PdfSharp.Drawing.BarCodes.BarCodeRenderInfo,System.Boolean)">
+            <summary>
+            Renders a thick or thin line for the bar code.
+            </summary>
+            <param name="info"></param>
+            <param name="isThick">Determines whether a thick or a thin line is about to be rendered.</param>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.ThickThinBarCode.RenderGap(PdfSharp.Drawing.BarCodes.BarCodeRenderInfo,System.Boolean)">
+            <summary>
+            Renders a thick or thin gap for the bar code.
+            </summary>
+            <param name="info"></param>
+            <param name="isThick">Determines whether a thick or a thin gap is about to be rendered.</param>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.ThickThinBarCode.RenderTurboBit(PdfSharp.Drawing.BarCodes.BarCodeRenderInfo,System.Boolean)">
+            <summary>
+            Renders a thick bar before or behind the code.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Drawing.BarCodes.ThickThinBarCode.GetBarWidth(PdfSharp.Drawing.BarCodes.BarCodeRenderInfo,System.Boolean)">
+            <summary>
+            Gets the width of a thick or a thin line (or gap). CalcLineWidth must have been called before.
+            </summary>
+            <param name="info"></param>
+            <param name="isThick">Determines whether a thick line’s width shall be returned.</param>
+        </member>
+        <member name="T:PdfSharp.Extensions">
+            <summary>
+            Extension methods for drawing bar codes.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Extensions.DrawBarCode(PdfSharp.Drawing.XGraphics,PdfSharp.Drawing.BarCodes.BarCode,PdfSharp.Drawing.XPoint)">
+            <summary>
+            Draws the specified bar code.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Extensions.DrawBarCode(PdfSharp.Drawing.XGraphics,PdfSharp.Drawing.BarCodes.BarCode,PdfSharp.Drawing.XBrush,PdfSharp.Drawing.XPoint)">
+            <summary>
+            Draws the specified bar code.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Extensions.DrawBarCode(PdfSharp.Drawing.XGraphics,PdfSharp.Drawing.BarCodes.BarCode,PdfSharp.Drawing.XBrush,PdfSharp.Drawing.XFont,PdfSharp.Drawing.XPoint)">
+            <summary>
+            Draws the specified bar code.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Extensions.DrawMatrixCode(PdfSharp.Drawing.XGraphics,PdfSharp.Drawing.BarCodes.MatrixCode,PdfSharp.Drawing.XPoint)">
+            <summary>
+            Draws the specified data matrix code.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Extensions.DrawMatrixCode(PdfSharp.Drawing.XGraphics,PdfSharp.Drawing.BarCodes.MatrixCode,PdfSharp.Drawing.XBrush,PdfSharp.Drawing.XPoint)">
+            <summary>
+            Draws the specified data matrix code.
+            </summary>
+        </member>
+    </members>
+</doc>

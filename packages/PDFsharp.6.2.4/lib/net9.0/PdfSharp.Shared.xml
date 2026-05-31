@@ -1,0 +1,157 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>PdfSharp.Shared</name>
+    </assembly>
+    <members>
+        <member name="T:PdfSharp.Diagnostics.NRT">
+            <summary>
+            Helper class for code migration to nullable reference types.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Diagnostics.NRT.ThrowOnNull(System.String)">
+            <summary>
+            Throws an InvalidOperationException because an expression which must not be null is null.
+            </summary>
+            <param name="message">The message.</param>
+            <exception cref="T:System.InvalidOperationException"></exception>
+        </member>
+        <member name="M:PdfSharp.Diagnostics.NRT.ThrowOnNull``1(System.String)">
+            <summary>
+            Throws InvalidOperationException. Use this function during the transition from older C# code
+            to new code that uses nullable reference types.
+            </summary>
+            <typeparam name="TResult">The type this function must return to be compiled correctly.</typeparam>
+            <param name="message">An optional message used for the exception.</param>
+            <returns>Nothing, always throws.</returns>
+            <exception cref="T:System.InvalidOperationException"></exception>
+        </member>
+        <member name="M:PdfSharp.Diagnostics.NRT.ThrowOnNull``2(System.String)">
+            <summary>
+            Throws InvalidOperationException. Use this function during the transition from older C# code
+            to new code that uses nullable reference types.
+            </summary>
+            <typeparam name="TResult">The type this function must return to be compiled correctly.</typeparam>
+            <typeparam name="TType">The type of the object that is null.</typeparam>
+            <param name="message">An optional message used for the exception.</param>
+            <returns>Nothing, always throws.</returns>
+            <exception cref="T:System.InvalidOperationException"></exception>
+        </member>
+        <member name="T:PdfSharp.Internal.SyMsgId">
+            <summary>
+            System message ID.
+            </summary>
+        </member>
+        <member name="T:PdfSharp.Internal.MessageIdOffset">
+            <summary>
+            Offsets to ensure that all message IDs are pairwise distinct
+            within PDFsharp foundation.
+            </summary>
+        </member>
+        <member name="T:PdfSharp.Internal.PdfSharpGitVersionInformation">
+            <summary>
+            Product version information from git version tool.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Internal.PdfSharpGitVersionInformation.Major">
+            <summary>
+            The major version number of the product.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Internal.PdfSharpGitVersionInformation.Minor">
+            <summary>
+            The minor version number of the product.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Internal.PdfSharpGitVersionInformation.Patch">
+            <summary>
+            The patch number of the product.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Internal.PdfSharpGitVersionInformation.PreReleaseLabel">
+            <summary>
+            The Version pre-release string for NuGet.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Internal.PdfSharpGitVersionInformation.MajorMinorPatch">
+            <summary>
+            The full version number.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Internal.PdfSharpGitVersionInformation.SemVer">
+            <summary>
+            The full semantic version number created by GitVersion.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Internal.PdfSharpGitVersionInformation.InformationalVersion">
+            <summary>
+            The full informational version number created by GitVersion.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Internal.PdfSharpGitVersionInformation.BranchName">
+            <summary>
+            The branch name of the product.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Internal.PdfSharpGitVersionInformation.CommitDate">
+            <summary>
+            The commit date of the product.
+            </summary>
+        </member>
+        <member name="T:PdfSharp.Internal.SyMsg">
+            <summary>
+            (PDFsharp) System message.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Internal.SyMsg.#ctor(PdfSharp.Internal.SyMsgId,System.String)">
+            <summary>
+            (PDFsharp) System message.
+            </summary>
+        </member>
+        <member name="T:PdfSharp.Internal.SyMsgs">
+            <summary>
+            (PDFsharp) System message.
+            </summary>
+        </member>
+        <member name="T:PdfSharp.Internal.TH2">
+            <summary>
+            Experimental throw helper.
+            </summary>
+        </member>
+        <member name="T:PdfSharp.Internal.UrlLiterals">
+            <summary>
+            URLs used in PDFsharp are maintained only here.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Internal.UrlLiterals.LinkToRoot">
+            <summary>
+            URL for index page.
+            "https://docs.pdfsharp.net/"
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Internal.UrlLiterals.LinkToAssetsDoc">
+            <summary>
+            URL for missing assets error message.
+            "https://docs.pdfsharp.net/link/download-assets.html"
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Internal.UrlLiterals.LinkToFontResolving">
+            <summary>
+            URL for missing font resolver.
+            "https://docs.pdfsharp.net/link/font-resolving.html"
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Internal.UrlLiterals.LinkToMigraDocFontResolving">
+            <summary>
+            URL for missing MigraDoc error font.
+            "https://docs.pdfsharp.net/link/migradoc-font-resolving-6.2.html"
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Internal.UrlLiterals.LinkToCannotOpenPdfFile">
+            <summary>
+            URL shown when a PDF file cannot be opened/parsed.
+            "https://docs.pdfsharp.net/link/cannot-open-pdf-6.2.html"
+            </summary>
+        </member>
+    </members>
+</doc>

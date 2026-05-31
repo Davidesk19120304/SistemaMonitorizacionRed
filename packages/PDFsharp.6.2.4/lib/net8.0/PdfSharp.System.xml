@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>PdfSharp.System</name>
+    </assembly>
+    <members>
+        <member name="T:PdfSharp.IO_dummy.StreamToMemoryReader">
+            <summary>
+            Reads any stream into a Memory&lt;byte&gt;.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.IO_dummy.StreamToMemoryReader.#ctor(System.IO.Stream)">
+            <summary>
+            Reads any stream into a Memory&lt;byte&gt;.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.IO_dummy.StreamToMemoryReader.ReadToEnd">
+            <summary>
+            Reads a stream to the end.
+            </summary>
+        </member>
+        <member name="T:PdfSharp.Logging.LogCategory">
+            <summary>
+            Defines the logging categories of PDFsharp.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Logging.LogCategory.PdfSharp">
+            <summary>
+            Default category for standard logger.
+            </summary>
+        </member>
+        <member name="T:PdfSharp.Logging.LogHost">
+            <summary>
+            Provides a single global logger factory used for logging in PDFsharp.
+            </summary>
+        </member>
+        <member name="P:PdfSharp.Logging.LogHost.Factory">
+            <summary>
+            Gets or sets the current global logger factory singleton for PDFsharp.
+            Every logger used in PDFsharp code is created by this factory.
+            You can change the logger factory at any one time you want.
+            If no factory is provided the NullLoggerFactory is used as the default.
+            </summary>
+        </member>
+        <member name="P:PdfSharp.Logging.LogHost.Logger">
+            <summary>
+            Gets the global PDFsharp default logger.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Logging.LogHost.CreateLogger(System.String)">
+            <summary>
+            Creates a logger with a given category name.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Logging.LogHost.CreateLogger``1">
+            <summary>
+            Creates a logger with the full name of the given type as category name.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Logging.LogHost.ResetLogging">
+            <summary>
+            Resets the logging host to the state it has immediately after loading the PDFsharp library.
+            </summary>
+            <remarks>
+            This function is only useful in unit test scenarios and not intended to be called from application code.
+            </remarks>
+        </member>
+        <member name="T:PdfSharp.Pdf.Signatures.PdfMessageDigestType">
+            <summary>
+            Specifies the algorithm used to generate the message digest.
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Pdf.Signatures.PdfMessageDigestType.SHA1">
+            <summary>
+            (PDF 1.3)
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Pdf.Signatures.PdfMessageDigestType.SHA256">
+            <summary>
+            (PDF 1.6)
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Pdf.Signatures.PdfMessageDigestType.SHA384">
+            <summary>
+            (PDF 1.7)
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Pdf.Signatures.PdfMessageDigestType.SHA512">
+            <summary>
+            (PDF 1.7)
+            </summary>
+        </member>
+        <member name="F:PdfSharp.Pdf.Signatures.PdfMessageDigestType.RIPEMD160">
+            <summary>
+            (PDF 1.7)
+            </summary>
+        </member>
+        <member name="T:PdfSharp.Pdf.Signatures.IDigitalSigner">
+            <summary>
+            Interface for classes that generate digital signatures.
+            </summary>
+        </member>
+        <member name="P:PdfSharp.Pdf.Signatures.IDigitalSigner.CertificateName">
+            <summary>
+            Gets a human-readable name of the used certificate.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Pdf.Signatures.IDigitalSigner.GetSignatureSizeAsync">
+            <summary>
+            Gets the size of the signature in bytes.
+            The size is used to reserve space in the PDF file that is later filled with the signature.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Pdf.Signatures.IDigitalSigner.GetSignatureAsync(System.IO.Stream)">
+            <summary>
+            Gets the signatures of the specified stream.
+            </summary>
+            <param name="stream"></param>
+        </member>
+    </members>
+</doc>

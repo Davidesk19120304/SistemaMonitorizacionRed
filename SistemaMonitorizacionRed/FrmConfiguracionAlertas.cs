@@ -24,6 +24,7 @@ namespace SistemaMonitorizacionRed
 
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmConfiguracionAlertas));
             this.chkAlertasActivas = new System.Windows.Forms.CheckBox();
             this.lblSigma = new System.Windows.Forms.Label();
             this.numSigma = new System.Windows.Forms.NumericUpDown();
@@ -89,6 +90,7 @@ namespace SistemaMonitorizacionRed
             this.btnGuardar.TabIndex = 3;
             this.btnGuardar.Text = "Guardar";
             this.btnGuardar.UseVisualStyleBackColor = false;
+            this.btnGuardar.Click += new System.EventHandler(this.BtnGuardar_Click);  // <--- ¡Faltaba esto!
             // 
             // btnCancelar
             // 
@@ -101,6 +103,7 @@ namespace SistemaMonitorizacionRed
             this.btnCancelar.TabIndex = 4;
             this.btnCancelar.Text = "Cancelar";
             this.btnCancelar.UseVisualStyleBackColor = false;
+            this.btnCancelar.Click += new System.EventHandler(this.BtnCancelar_Click); // <--- ¡Faltaba esto!
             // 
             // FrmConfiguracionAlertas
             // 
@@ -112,6 +115,7 @@ namespace SistemaMonitorizacionRed
             this.Controls.Add(this.btnGuardar);
             this.Controls.Add(this.btnCancelar);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FrmConfiguracionAlertas";
@@ -120,7 +124,6 @@ namespace SistemaMonitorizacionRed
             this.Load += new System.EventHandler(this.FrmConfiguracionAlertas_Load);
             ((System.ComponentModel.ISupportInitialize)(this.numSigma)).EndInit();
             this.ResumeLayout(false);
-
         }
 
         private void BtnGuardar_Click(object sender, EventArgs e)
@@ -137,7 +140,9 @@ namespace SistemaMonitorizacionRed
             this.Close();
         }
 
-        // Método para cargar los valores actuales desde FrmMain
+        /// <summary>
+        /// Carga los valores actuales (provenientes de FrmMain) en los controles.
+        /// </summary>
         public void CargarValores()
         {
             chkAlertasActivas.Checked = AlertasActivas;
@@ -146,7 +151,7 @@ namespace SistemaMonitorizacionRed
 
         private void FrmConfiguracionAlertas_Load(object sender, EventArgs e)
         {
-
+            // No se necesita lógica adicional en este caso
         }
     }
 }

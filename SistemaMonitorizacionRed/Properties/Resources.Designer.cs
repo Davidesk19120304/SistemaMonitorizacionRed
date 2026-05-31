@@ -63,9 +63,19 @@ namespace SistemaMonitorizacionRed.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap LOGO {
+        internal static System.Drawing.Bitmap LOGO_OSCURO {
             get {
-                object obj = ResourceManager.GetObject("LOGO", resourceCulture);
+                object obj = ResourceManager.GetObject("LOGO_OSCURO", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap LOGO_PEQUENO {
+            get {
+                object obj = ResourceManager.GetObject("LOGO_PEQUENO", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

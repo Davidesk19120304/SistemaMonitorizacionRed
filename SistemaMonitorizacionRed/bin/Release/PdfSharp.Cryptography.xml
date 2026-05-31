@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>PdfSharp.Cryptography</name>
+    </assembly>
+    <members>
+        <member name="T:PdfSharp.Pdf.Signatures.PsCryptoMsgId">
+            <summary>
+            PDFsharp cryptography message IDs.
+            </summary>
+        </member>
+        <member name="T:PdfSharp.Pdf.Signatures.PdfSharpDefaultSigner">
+            <summary>
+            Signer implementation that uses .NET classes only.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Pdf.Signatures.PdfSharpDefaultSigner.#ctor(System.Security.Cryptography.X509Certificates.X509Certificate2,PdfSharp.Pdf.Signatures.PdfMessageDigestType,System.Uri)">
+            <summary>
+            Creates a new instance of the PdfSharpDefaultSigner class.
+            </summary>
+            <param name="certificate"></param>
+            <param name="digestType"></param>
+            <param name="timeStampAuthorityUri"></param>
+        </member>
+        <member name="P:PdfSharp.Pdf.Signatures.PdfSharpDefaultSigner.CertificateName">
+            <summary>
+            Gets the name of the certificate.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Pdf.Signatures.PdfSharpDefaultSigner.GetSignatureSizeAsync">
+            <summary>
+            Determines the size of the contents to be reserved in the PDF file for the signature.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Pdf.Signatures.PdfSharpDefaultSigner.GetSignatureAsync(System.IO.Stream)">
+            <summary>
+            Creates the signature for a stream containing the PDF file.
+            </summary>
+            <param name="stream"></param>
+            <exception cref="T:System.InvalidOperationException"></exception>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="T:PdfSharp.Pdf.Signatures.PsCryptoMsgs">
+            <summary>
+            The PDFsharp cryptography messages.
+            </summary>
+        </member>
+        <member name="T:PdfSharp.Pdf.Signatures.PsCryptoMsg">
+            <summary>
+            PDFsharp cryptography message.
+            </summary>
+        </member>
+        <member name="M:PdfSharp.Pdf.Signatures.PsCryptoMsg.#ctor(PdfSharp.Pdf.Signatures.PsCryptoMsgId,System.String)">
+            <summary>
+            PDFsharp cryptography message.
+            </summary>
+        </member>
+        <member name="T:System.Runtime.CompilerServices.RuntimeHelpers">
+            <summary>
+            Extension method GetSubArray required for the built-in range operator (e.g.'[1..9]').
+            Fun fact: This class must be compiled into each assembly. If it is only visible through
+            InternalsVisibleTo code will not compile with .NET Framework 4.6.2 and .NET Standard 2.0.
+            </summary>
+        </member>
+        <member name="M:System.Runtime.CompilerServices.RuntimeHelpers.GetSubArray``1(``0[],System.Range)">
+            <summary>
+            Slices the specified array using the specified range.
+            </summary>
+        </member>
+    </members>
+</doc>
