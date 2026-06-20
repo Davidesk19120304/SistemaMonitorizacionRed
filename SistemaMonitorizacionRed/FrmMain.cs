@@ -99,7 +99,7 @@ namespace SistemaMonitorizacionRed
         private bool procesandoCola = false;
 
         // --- Conexión a MySQL ---
-        private string connectionString = "Server=192.168.1.102;Database=monitorizacion_red;Uid=usuario1;Pwd=123456";
+        private string connectionString = "Server=192.168.1.102;Database=monitorizacion_red;Uid=root;Pwd=;";
 
         #endregion
 
@@ -2066,6 +2066,11 @@ namespace SistemaMonitorizacionRed
         #endregion
 
         private void archivoToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void headerPanel_Paint(object sender, PaintEventArgs e)
         {
 
         }

@@ -58,8 +58,6 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
             this.menuStrip = new System.Windows.Forms.MenuStrip();
-            this.archivoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.salirToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.herramientasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.configuracionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -69,6 +67,8 @@
             this.historialAlertasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.vistaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modoOscuroToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.archivoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.salirToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.headerPanel = new System.Windows.Forms.Panel();
             this.titleLabel = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
@@ -95,9 +95,9 @@
             this.btnAplicarFiltro = new System.Windows.Forms.Button();
             this.btnLimpiarFiltros = new System.Windows.Forms.Button();
             this.lblEstadisticasTiempoReal = new System.Windows.Forms.Label();
-            this.lblEstadisticasFiltro = new System.Windows.Forms.Label();
             this.dgvPaquetes = new System.Windows.Forms.DataGridView();
             this.chartTrafico = new LiveCharts.WinForms.CartesianChart();
+            this.lblEstadisticasFiltro = new System.Windows.Forms.Label();
             this.menuStrip.SuspendLayout();
             this.headerPanel.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -119,25 +119,9 @@
             this.archivoToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(1222, 24);
+            this.menuStrip.Size = new System.Drawing.Size(1271, 24);
             this.menuStrip.TabIndex = 0;
             this.menuStrip.Text = "menuStrip1";
-            // 
-            // archivoToolStripMenuItem
-            // 
-            this.archivoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.salirToolStripMenuItem});
-            this.archivoToolStripMenuItem.Name = "archivoToolStripMenuItem";
-            this.archivoToolStripMenuItem.Size = new System.Drawing.Size(87, 20);
-            this.archivoToolStripMenuItem.Text = "Cerrar sesion";
-            this.archivoToolStripMenuItem.Click += new System.EventHandler(this.archivoToolStripMenuItem_Click_1);
-            // 
-            // salirToolStripMenuItem
-            // 
-            this.salirToolStripMenuItem.Name = "salirToolStripMenuItem";
-            this.salirToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.salirToolStripMenuItem.Text = "Salir";
-            this.salirToolStripMenuItem.Click += new System.EventHandler(this.SalirMenu_Click);
             // 
             // herramientasToolStripMenuItem
             // 
@@ -150,7 +134,7 @@
             // configuracionToolStripMenuItem
             // 
             this.configuracionToolStripMenuItem.Name = "configuracionToolStripMenuItem";
-            this.configuracionToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.configuracionToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.configuracionToolStripMenuItem.Text = "Configuración";
             this.configuracionToolStripMenuItem.Click += new System.EventHandler(this.BtnConfig_Click);
             // 
@@ -207,6 +191,22 @@
             this.modoOscuroToolStripMenuItem.Text = "Modo oscuro";
             this.modoOscuroToolStripMenuItem.Click += new System.EventHandler(this.ToggleModoOscuro);
             // 
+            // archivoToolStripMenuItem
+            // 
+            this.archivoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.salirToolStripMenuItem});
+            this.archivoToolStripMenuItem.Name = "archivoToolStripMenuItem";
+            this.archivoToolStripMenuItem.Size = new System.Drawing.Size(87, 20);
+            this.archivoToolStripMenuItem.Text = "Cerrar sesion";
+            this.archivoToolStripMenuItem.Click += new System.EventHandler(this.archivoToolStripMenuItem_Click_1);
+            // 
+            // salirToolStripMenuItem
+            // 
+            this.salirToolStripMenuItem.Name = "salirToolStripMenuItem";
+            this.salirToolStripMenuItem.Size = new System.Drawing.Size(96, 22);
+            this.salirToolStripMenuItem.Text = "Salir";
+            this.salirToolStripMenuItem.Click += new System.EventHandler(this.SalirMenu_Click);
+            // 
             // headerPanel
             // 
             this.headerPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(102)))), ((int)(((byte)(204)))));
@@ -214,8 +214,9 @@
             this.headerPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.headerPanel.Location = new System.Drawing.Point(0, 24);
             this.headerPanel.Name = "headerPanel";
-            this.headerPanel.Size = new System.Drawing.Size(1222, 70);
+            this.headerPanel.Size = new System.Drawing.Size(1271, 70);
             this.headerPanel.TabIndex = 1;
+            this.headerPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.headerPanel_Paint);
             // 
             // titleLabel
             // 
@@ -231,10 +232,11 @@
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Location = new System.Drawing.Point(12, 100);
+            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl1.Location = new System.Drawing.Point(0, 94);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1210, 526);
+            this.tabControl1.Size = new System.Drawing.Size(1271, 544);
             this.tabControl1.TabIndex = 2;
             // 
             // tabPage1
@@ -243,21 +245,23 @@
             this.tabPage1.Controls.Add(this.gbCaptura);
             this.tabPage1.Controls.Add(this.gbFiltros);
             this.tabPage1.Controls.Add(this.lblEstadisticasTiempoReal);
-            this.tabPage1.Controls.Add(this.lblEstadisticasFiltro);
             this.tabPage1.Controls.Add(this.dgvPaquetes);
             this.tabPage1.Controls.Add(this.chartTrafico);
+            this.tabPage1.Controls.Add(this.lblEstadisticasFiltro);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(1202, 500);
+            this.tabPage1.Size = new System.Drawing.Size(1263, 518);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Monitorización";
             this.tabPage1.Click += new System.EventHandler(this.tabPage1_Click_1);
             // 
             // gbDiagnostico
             // 
+            this.gbDiagnostico.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.gbDiagnostico.Controls.Add(this.panelScrollDiagnostico);
-            this.gbDiagnostico.Location = new System.Drawing.Point(680, 6);
+            this.gbDiagnostico.Location = new System.Drawing.Point(741, 6);
             this.gbDiagnostico.Name = "gbDiagnostico";
             this.gbDiagnostico.Size = new System.Drawing.Size(514, 252);
             this.gbDiagnostico.TabIndex = 20;
@@ -409,6 +413,8 @@
             // 
             // gbCaptura
             // 
+            this.gbCaptura.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.gbCaptura.BackColor = System.Drawing.Color.White;
             this.gbCaptura.Controls.Add(this.cmbInterfaces);
             this.gbCaptura.Controls.Add(this.btnIniciar);
@@ -416,7 +422,7 @@
             this.gbCaptura.Controls.Add(this.lblEstadisticas);
             this.gbCaptura.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.gbCaptura.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(51)))), ((int)(((byte)(102)))));
-            this.gbCaptura.Location = new System.Drawing.Point(6, 6);
+            this.gbCaptura.Location = new System.Drawing.Point(19, 6);
             this.gbCaptura.Name = "gbCaptura";
             this.gbCaptura.Size = new System.Drawing.Size(246, 120);
             this.gbCaptura.TabIndex = 0;
@@ -472,6 +478,9 @@
             // 
             // gbFiltros
             // 
+            this.gbFiltros.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.gbFiltros.BackColor = System.Drawing.Color.White;
             this.gbFiltros.Controls.Add(this.cmbProtocolo);
             this.gbFiltros.Controls.Add(this.cmbFiltroIPOrigen);
@@ -482,7 +491,7 @@
             this.gbFiltros.Controls.Add(this.btnLimpiarFiltros);
             this.gbFiltros.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.gbFiltros.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(51)))), ((int)(((byte)(102)))));
-            this.gbFiltros.Location = new System.Drawing.Point(258, 6);
+            this.gbFiltros.Location = new System.Drawing.Point(304, 6);
             this.gbFiltros.Name = "gbFiltros";
             this.gbFiltros.Size = new System.Drawing.Size(416, 120);
             this.gbFiltros.TabIndex = 1;
@@ -566,20 +575,11 @@
             this.lblEstadisticasTiempoReal.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblEstadisticasTiempoReal.AutoSize = true;
             this.lblEstadisticasTiempoReal.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.lblEstadisticasTiempoReal.Location = new System.Drawing.Point(16, 146);
+            this.lblEstadisticasTiempoReal.Location = new System.Drawing.Point(16, 144);
             this.lblEstadisticasTiempoReal.Name = "lblEstadisticasTiempoReal";
             this.lblEstadisticasTiempoReal.Size = new System.Drawing.Size(231, 15);
             this.lblEstadisticasTiempoReal.TabIndex = 0;
             this.lblEstadisticasTiempoReal.Text = "TCP: 0/s | UDP: 0/s | ICMP: 0/s | Total: 0/s";
-            // 
-            // lblEstadisticasFiltro
-            // 
-            this.lblEstadisticasFiltro.AutoSize = true;
-            this.lblEstadisticasFiltro.Location = new System.Drawing.Point(325, 148);
-            this.lblEstadisticasFiltro.Name = "lblEstadisticasFiltro";
-            this.lblEstadisticasFiltro.Size = new System.Drawing.Size(161, 13);
-            this.lblEstadisticasFiltro.TabIndex = 7;
-            this.lblEstadisticasFiltro.Text = "TCP:0 | UDP:0 | ICMP:0 | Total:0";
             // 
             // dgvPaquetes
             // 
@@ -591,23 +591,36 @@
             this.dgvPaquetes.EnableHeadersVisualStyles = false;
             this.dgvPaquetes.Location = new System.Drawing.Point(4, 169);
             this.dgvPaquetes.Name = "dgvPaquetes";
-            this.dgvPaquetes.Size = new System.Drawing.Size(670, 325);
+            this.dgvPaquetes.Size = new System.Drawing.Size(731, 343);
             this.dgvPaquetes.TabIndex = 4;
             this.dgvPaquetes.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.DgvPaquetes_CellFormatting);
             // 
             // chartTrafico
             // 
-            this.chartTrafico.Location = new System.Drawing.Point(680, 298);
+            this.chartTrafico.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.chartTrafico.Location = new System.Drawing.Point(741, 301);
             this.chartTrafico.Name = "chartTrafico";
             this.chartTrafico.Size = new System.Drawing.Size(514, 196);
             this.chartTrafico.TabIndex = 23;
+            // 
+            // lblEstadisticasFiltro
+            // 
+            this.lblEstadisticasFiltro.AutoSize = true;
+            this.lblEstadisticasFiltro.Location = new System.Drawing.Point(429, 146);
+            this.lblEstadisticasFiltro.Name = "lblEstadisticasFiltro";
+            this.lblEstadisticasFiltro.Size = new System.Drawing.Size(0, 13);
+            this.lblEstadisticasFiltro.TabIndex = 7;
+            this.lblEstadisticasFiltro.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.lblEstadisticasFiltro.Visible = false;
             // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(248)))), ((int)(((byte)(255)))));
-            this.ClientSize = new System.Drawing.Size(1222, 638);
+            this.ClientSize = new System.Drawing.Size(1271, 638);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.headerPanel);
             this.Controls.Add(this.menuStrip);
