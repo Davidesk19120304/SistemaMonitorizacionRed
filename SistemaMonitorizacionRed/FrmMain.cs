@@ -8,6 +8,7 @@ using PdfSharp.Pdf;                         // PdfDocument, PdfPage, PageSize, P
 using SharpPcap;                           // Dispositivos de captura y modos de apertura
 using SharpPcap.LibPcap;                   // Implementación concreta para Windows (Npcap)
 using System;
+using Microsoft.VisualBasic;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;                            // Path, File, StreamWriter
@@ -99,7 +100,7 @@ namespace SistemaMonitorizacionRed
         private bool procesandoCola = false;
 
         // --- Conexión a MySQL ---
-        private string connectionString = "Server=192.168.1.102;Database=monitorizacion_red;Uid=root;Pwd=;";
+        private string connectionString = "Server=localhost;Database=monitorizacion_red;Uid=root;Pwd=;";
 
         #endregion
 
@@ -134,6 +135,8 @@ namespace SistemaMonitorizacionRed
             AgregarLogo();
             ConfigurarDataGridView();
             ConfigurarGrafico();
+            cmbFiltroIPOrigen.KeyPress += TxtIP_KeyPress;
+            cmbFiltroIPDestino.KeyPress += TxtIP_KeyPress;
 
             dgvPaquetes.AllowUserToAddRows = false;
             dgvPaquetes.CellFormatting += DgvPaquetes_CellFormatting;
@@ -178,6 +181,14 @@ namespace SistemaMonitorizacionRed
             // Timer para procesar la cola de notificaciones cada 5 segundos
             timerNotificaciones = new Timer { Interval = 5000 };
             timerNotificaciones.Tick += (s, e) => ProcesarColaNotificaciones();
+        }
+        private void TxtIP_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsDigit(e.KeyChar) && e.KeyChar != '.' && !char.IsControl(e.KeyChar))
+            {
+                e.Handled = true;
+                System.Media.SystemSounds.Beep.Play();
+            }
         }
 
         /// <summary>
@@ -389,16 +400,12 @@ namespace SistemaMonitorizacionRed
                     foreach (string ip in ipsDestino)
                         cmbFiltroIPDestino.Items.Add(ip);
 
-                    // Configurar autocompletado nativo (solo sugiere, no selecciona automáticamente)
+                    // Configurar autocompletado usando la propia lista (más fiable)
                     cmbFiltroIPOrigen.AutoCompleteMode = AutoCompleteMode.Suggest;
-                    cmbFiltroIPOrigen.AutoCompleteSource = AutoCompleteSource.CustomSource;
-                    cmbFiltroIPOrigen.AutoCompleteCustomSource.Clear();
-                    cmbFiltroIPOrigen.AutoCompleteCustomSource.AddRange(ipsOrigen.ToArray());
+                    cmbFiltroIPOrigen.AutoCompleteSource = AutoCompleteSource.ListItems;
 
                     cmbFiltroIPDestino.AutoCompleteMode = AutoCompleteMode.Suggest;
-                    cmbFiltroIPDestino.AutoCompleteSource = AutoCompleteSource.CustomSource;
-                    cmbFiltroIPDestino.AutoCompleteCustomSource.Clear();
-                    cmbFiltroIPDestino.AutoCompleteCustomSource.AddRange(ipsDestino.ToArray());
+                    cmbFiltroIPDestino.AutoCompleteSource = AutoCompleteSource.ListItems;
 
                     // Habilitar los ComboBox
                     cmbFiltroIPOrigen.Enabled = true;
@@ -409,7 +416,6 @@ namespace SistemaMonitorizacionRed
                     cmbFiltroIPDestino.Text = "";
                 }));
             });
-            // NOTA: ya no se llama a CargarIPsUnicas() aquí, para evitar doble carga y bloqueo
         }
 
         /// <summary>
@@ -946,8 +952,6 @@ namespace SistemaMonitorizacionRed
             }
         }
 
-        private void btnAplicarFiltro_Click(object sender, EventArgs e) => AplicarFiltros();
-
         private void btnLimpiarFiltros_Click(object sender, EventArgs e)
         {
             cmbProtocolo.SelectedIndex = 0;
@@ -973,6 +977,239 @@ namespace SistemaMonitorizacionRed
                     factorSigma = frm.FactorSigma;
                     MostrarNotificacionEmergente("✅ Configuración guardada", Color.FromArgb(0, 120, 100), 2000);
                 }
+            }
+        }
+        private void cuentaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Obtener el usuario logueado del título del formulario
+            string usuarioActual = this.Text.Replace("Monitorización - Usuario: ", "").Split('(')[0].Trim();
+
+            // =============================================
+            // VERIFICAR CONTRASEÑA ACTUAL
+            // =============================================
+            string claveActual = Microsoft.VisualBasic.Interaction.InputBox(
+                "Ingrese su contraseña actual:", "Verificación de seguridad", "", -1, -1);
+
+            if (string.IsNullOrEmpty(claveActual))
+                return; // Solo aquí se sale si el usuario cancela
+
+            string hashActual = SHA256(claveActual);
+
+            try
+            {
+                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                {
+                    conn.Open();
+                    string query = "SELECT COUNT(*) FROM usuarios WHERE usuario = @usr AND contraseña = @hash";
+                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@usr", usuarioActual);
+                        cmd.Parameters.AddWithValue("@hash", hashActual);
+
+                        if (Convert.ToInt32(cmd.ExecuteScalar()) == 0)
+                        {
+                            MessageBox.Show("Contraseña actual incorrecta.", "Error",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al verificar la contraseña: " + ex.Message, "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // =============================================
+            // CAMBIAR CONTRASEÑA (con reintentos)
+            // =============================================
+            string nuevaClave = Microsoft.VisualBasic.Interaction.InputBox(
+                "Ingrese la nueva contraseña:", "Cambiar Contraseña", "", -1, -1);
+
+            if (!string.IsNullOrEmpty(nuevaClave))
+            {
+                bool confirmada = false;
+
+                while (!confirmada)
+                {
+                    string confirmarClave = Microsoft.VisualBasic.Interaction.InputBox(
+                        "Confirme la nueva contraseña:", "Cambiar Contraseña", "", -1, -1);
+
+                    if (string.IsNullOrEmpty(confirmarClave))
+                        break; // Canceló la confirmación, salir del bucle
+
+                    if (nuevaClave == confirmarClave)
+                    {
+                        confirmada = true;
+
+                        string nuevoHash = SHA256(nuevaClave);
+
+                        try
+                        {
+                            using (MySqlConnection conn = new MySqlConnection(connectionString))
+                            {
+                                conn.Open();
+                                string query = "UPDATE usuarios SET contraseña = @hash WHERE usuario = @usr";
+                                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                                {
+                                    cmd.Parameters.AddWithValue("@hash", nuevoHash);
+                                    cmd.Parameters.AddWithValue("@usr", usuarioActual);
+                                    cmd.ExecuteNonQuery();
+                                }
+                            }
+                            MessageBox.Show("Contraseña cambiada exitosamente.", "Éxito",
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("Error al cambiar la contraseña: " + ex.Message, "Error",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Las contraseñas no coinciden. Intente nuevamente.", "Error",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+
+            // =============================================
+            // CAMBIAR NOMBRE DE USUARIO (SIEMPRE SE PREGUNTA)
+            // =============================================
+            string nuevoUsuario = Microsoft.VisualBasic.Interaction.InputBox(
+                "Ingrese el nuevo nombre de usuario (deje vacío para no cambiarlo):",
+                "Cambiar Usuario", "", -1, -1);
+
+            if (string.IsNullOrEmpty(nuevoUsuario))
+                return;
+
+            if (nuevoUsuario == usuarioActual)
+            {
+                MessageBox.Show("El nuevo nombre de usuario es igual al actual.", "Información",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            try
+            {
+                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    string checkQuery = "SELECT COUNT(*) FROM usuarios WHERE usuario = @nuevo";
+                    using (MySqlCommand cmdCheck = new MySqlCommand(checkQuery, conn))
+                    {
+                        cmdCheck.Parameters.AddWithValue("@nuevo", nuevoUsuario);
+                        if (Convert.ToInt32(cmdCheck.ExecuteScalar()) > 0)
+                        {
+                            MessageBox.Show("El nombre de usuario ya está en uso.", "Error",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+                    }
+
+                    string updateQuery = "UPDATE usuarios SET usuario = @nuevo WHERE usuario = @actual";
+                    using (MySqlCommand cmdUpdate = new MySqlCommand(updateQuery, conn))
+                    {
+                        cmdUpdate.Parameters.AddWithValue("@nuevo", nuevoUsuario);
+                        cmdUpdate.Parameters.AddWithValue("@actual", usuarioActual);
+                        cmdUpdate.ExecuteNonQuery();
+                    }
+                }
+
+                MessageBox.Show("Usuario cambiado exitosamente. Deberá iniciar sesión nuevamente.", "Éxito",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al cambiar el usuario: " + ex.Message, "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // Método auxiliar SHA256 (agrégalo si no lo tienes ya en FrmMain)
+        private string SHA256(string texto)
+        {
+            using (var sha = System.Security.Cryptography.SHA256.Create())
+            {
+                byte[] bytes = sha.ComputeHash(System.Text.Encoding.UTF8.GetBytes(texto));
+                return BitConverter.ToString(bytes).Replace("-", "").ToLower();
+            }
+        }
+        private void cambiarPINToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            string usuarioActual = this.Text.Replace("Monitorización - Usuario: ", "").Split('(')[0].Trim();
+
+            string pinActual = Microsoft.VisualBasic.Interaction.InputBox(
+                "Ingrese su PIN actual:", "Cambiar PIN", "", -1, -1);
+
+            if (string.IsNullOrEmpty(pinActual) || pinActual.Length != 4 || !int.TryParse(pinActual, out _))
+            {
+                MessageBox.Show("PIN inválido. Debe ser exactamente 4 dígitos.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            string hashActual = SHA256(pinActual);
+
+            try
+            {
+                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                {
+                    conn.Open();
+                    string query = "SELECT pin FROM usuarios WHERE usuario = @usr";
+                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@usr", usuarioActual);
+                        string hashGuardado = cmd.ExecuteScalar()?.ToString();
+
+                        if (hashActual != hashGuardado)
+                        {
+                            MessageBox.Show("PIN actual incorrecto.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al verificar el PIN: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            string nuevoPin = Microsoft.VisualBasic.Interaction.InputBox("Ingrese el nuevo PIN (4 dígitos):", "Cambiar PIN", "", -1, -1);
+
+            if (string.IsNullOrEmpty(nuevoPin) || nuevoPin.Length != 4 || !int.TryParse(nuevoPin, out _))
+            {
+                MessageBox.Show("El nuevo PIN debe ser exactamente 4 dígitos.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            string confirmarPin = Microsoft.VisualBasic.Interaction.InputBox("Confirme el nuevo PIN:", "Cambiar PIN", "", -1, -1);
+            if (nuevoPin != confirmarPin)
+            {
+                MessageBox.Show("Los PIN no coinciden.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            string nuevoHash = SHA256(nuevoPin);
+            try
+            {
+                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                {
+                    conn.Open();
+                    string query = "UPDATE usuarios SET pin = @hash WHERE usuario = @usr";
+                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@hash", nuevoHash);
+                        cmd.Parameters.AddWithValue("@usr", usuarioActual);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                MessageBox.Show("PIN cambiado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al cambiar el PIN: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -1594,6 +1831,11 @@ namespace SistemaMonitorizacionRed
             this.ForeColor = Color.WhiteSmoke;
             headerPanel.BackColor = Color.FromArgb(45, 45, 48);
 
+            cmbFiltroIPOrigen.BackColor = Color.FromArgb(70, 70, 75);
+            cmbFiltroIPOrigen.ForeColor = Color.White;
+            cmbFiltroIPDestino.BackColor = Color.FromArgb(70, 70, 75);
+            cmbFiltroIPDestino.ForeColor = Color.White;
+
             // Fondo de la pestaña (tabPage1)
             tabPage1.BackColor = Color.FromArgb(30, 30, 35);
 
@@ -1625,16 +1867,29 @@ namespace SistemaMonitorizacionRed
             lblEstadisticasFiltro.ForeColor = Color.WhiteSmoke;
 
             // Velocímetros y etiquetas de diagnóstico
-            if (CpbVelocidadEnlace2 != null) CpbVelocidadEnlace2.ForeColor = Color.Black;
-            if (CpbLatencia2 != null) CpbLatencia2.ForeColor = Color.Black;
-            if (CpbBandaWifi2 != null) CpbBandaWifi2.ForeColor = Color.Black;
+            if (CpbVelocidadEnlace2 != null)
+            {
+                CpbVelocidadEnlace2.ForeColor = Color.White;
+                CpbVelocidadEnlace2.OuterColor = Color.DarkGray;
+                CpbVelocidadEnlace2.InnerColor = Color.FromArgb(50, 50, 55);
+            }
+            if (CpbLatencia2 != null)
+            {
+                CpbLatencia2.ForeColor = Color.White;
+                CpbLatencia2.OuterColor = Color.DarkGray;
+                CpbLatencia2.InnerColor = Color.FromArgb(50, 50, 55);
+            }
+            if (CpbBandaWifi2 != null)
+            {
+                CpbBandaWifi2.ForeColor = Color.White;
+                CpbBandaWifi2.OuterColor = Color.DarkGray;
+                CpbBandaWifi2.InnerColor = Color.FromArgb(50, 50, 55);
+            }
             if (lblVelocidadValor2 != null) lblVelocidadValor2.ForeColor = Color.WhiteSmoke;
             if (lblLatenciaValor2 != null) lblLatenciaValor2.ForeColor = Color.WhiteSmoke;
             if (lblBandaValor2 != null) lblBandaValor2.ForeColor = Color.WhiteSmoke;
 
             // Botones de filtro
-            btnAplicarFiltro.BackColor = Color.FromArgb(0, 102, 204);
-            btnAplicarFiltro.ForeColor = Color.White;
             btnLimpiarFiltros.BackColor = Color.FromArgb(80, 80, 85);
             btnLimpiarFiltros.ForeColor = Color.WhiteSmoke;
 
@@ -1644,6 +1899,11 @@ namespace SistemaMonitorizacionRed
 
             // Gráfico de tráfico
             chartTrafico.BackColor = Color.FromArgb(30, 30, 35);
+            chartTrafico.DefaultLegend.Foreground = System.Windows.Media.Brushes.White;
+            if (chartTrafico.AxisX.Count > 0)
+                chartTrafico.AxisX[0].Foreground = System.Windows.Media.Brushes.White;
+            if (chartTrafico.AxisY.Count > 0)
+                chartTrafico.AxisY[0].Foreground = System.Windows.Media.Brushes.White;
 
             // Actualizar logo
             ActualizarLogo();
@@ -1667,6 +1927,11 @@ namespace SistemaMonitorizacionRed
             // Fondo de la pestaña (tabPage1)
             tabPage1.BackColor = Color.White;
 
+            cmbFiltroIPOrigen.BackColor = Color.White;
+            cmbFiltroIPOrigen.ForeColor = Color.Black;
+            cmbFiltroIPDestino.BackColor = Color.White;
+            cmbFiltroIPDestino.ForeColor = Color.Black;
+
             // Grupos de diagnóstico, captura y filtros
             foreach (var gb in new[] { gbCaptura, gbFiltros, gbDiagnostico })
             {
@@ -1680,9 +1945,24 @@ namespace SistemaMonitorizacionRed
             panelScrollDiagnostico.BackColor = Color.White;
 
             // Velocímetros y etiquetas de diagnóstico
-            if (CpbVelocidadEnlace2 != null) CpbVelocidadEnlace2.ForeColor = Color.Black;
-            if (CpbLatencia2 != null) CpbLatencia2.ForeColor = Color.Black;
-            if (CpbBandaWifi2 != null) CpbBandaWifi2.ForeColor = Color.Black;
+            if (CpbVelocidadEnlace2 != null)
+            {
+                CpbVelocidadEnlace2.ForeColor = Color.Black;
+                CpbVelocidadEnlace2.OuterColor = Color.LightGray;
+                CpbVelocidadEnlace2.InnerColor = Color.White;
+            }
+            if (CpbLatencia2 != null)
+            {
+                CpbLatencia2.ForeColor = Color.Black;
+                CpbLatencia2.OuterColor = Color.LightGray;
+                CpbLatencia2.InnerColor = Color.White;
+            }
+            if (CpbBandaWifi2 != null)
+            {
+                CpbBandaWifi2.ForeColor = Color.Black;
+                CpbBandaWifi2.OuterColor = Color.LightGray;
+                CpbBandaWifi2.InnerColor = Color.White;
+            }
             if (lblVelocidadValor2 != null) lblVelocidadValor2.ForeColor = Color.Black;
             if (lblLatenciaValor2 != null) lblLatenciaValor2.ForeColor = Color.Black;
             if (lblBandaValor2 != null) lblBandaValor2.ForeColor = Color.Black;
@@ -1702,8 +1982,6 @@ namespace SistemaMonitorizacionRed
             lblEstadisticasFiltro.ForeColor = Color.Black;
 
             // Botones de filtro
-            btnAplicarFiltro.BackColor = Color.FromArgb(0, 102, 204);
-            btnAplicarFiltro.ForeColor = Color.White;
             btnLimpiarFiltros.BackColor = Color.LightGray;
             btnLimpiarFiltros.ForeColor = Color.Black;
 
@@ -1711,8 +1989,12 @@ namespace SistemaMonitorizacionRed
             menuStrip.BackColor = SystemColors.Control;
             menuStrip.ForeColor = Color.Black;
 
-            // Gráfico de tráfico
             chartTrafico.BackColor = Color.White;
+            chartTrafico.DefaultLegend.Foreground = System.Windows.Media.Brushes.Black;
+            if (chartTrafico.AxisX.Count > 0)
+                chartTrafico.AxisX[0].Foreground = System.Windows.Media.Brushes.Black;
+            if (chartTrafico.AxisY.Count > 0)
+                chartTrafico.AxisY[0].Foreground = System.Windows.Media.Brushes.Black;
 
             // Actualizar logo
             ActualizarLogo();
@@ -1752,6 +2034,7 @@ namespace SistemaMonitorizacionRed
         private void btnVerAlertas_Click(object sender, EventArgs e)
         {
             HistorialAlertas frm = new HistorialAlertas();
+            frm.ModoOscuro = esModoOscuro;
             frm.ShowDialog();
         }
 
@@ -2051,28 +2334,10 @@ namespace SistemaMonitorizacionRed
 
         #region entradas vacias
 
-        private void titleLabel_Click(object sender, EventArgs e) { }
-        private void labelFiltroIPOrigen_Click(object sender, EventArgs e) { }
-        private void lblEstadisticasFiltro_Click(object sender, EventArgs e) { }
-        private void exportarToolStripMenuItem_Click(object sender, EventArgs e) { }
-        private void tabPage1_Click(object sender, EventArgs e) { }
-        private void chartTrafico_ChildChanged(object sender, System.Windows.Forms.Integration.ChildChangedEventArgs e) { }
-        private void titleLabel_Click_1(object sender, EventArgs e) { }
-        private void BtnConfig_Click_1(object sender, EventArgs e) { }
-        private void historialDeAlertasToolStripMenuItem_Click(object sender, EventArgs e) { }
-        private void archivoToolStripMenuItem_Click(object sender, EventArgs e) { }
         private void tabPage1_Click_1(object sender, EventArgs e) { }
+        private void archivoToolStripMenuItem_Click_1(object sender, EventArgs e) { }
+        private void headerPanel_Paint(object sender, PaintEventArgs e) { }
 
         #endregion
-
-        private void archivoToolStripMenuItem_Click_1(object sender, EventArgs e)
-        {
-
-        }
-
-        private void headerPanel_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
     }
 }

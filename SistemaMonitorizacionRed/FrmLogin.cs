@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Drawing;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace SistemaMonitorizacionRed
 {
     public partial class FrmLogin : Form
     {
-        public bool LoginExitoso { get; private set; } = false;
-        public string UsuarioActual { get; private set; } = "";
-        public string RolActual { get; private set; } = "";
-
         private Label lblTitulo;
         private Label lblUsuario;
         private TextBox txtUsuario;
@@ -18,131 +15,163 @@ namespace SistemaMonitorizacionRed
         private TextBox txtPassword;
         private Button btnIngresar;
         private Button btnCancelar;
+        private Panel panelPIN;
+        private Label lblMensajePIN;
+        private TextBox txtPIN;
+        private Button btnValidarPIN;
+        private Panel panelLogin;
 
-        // Cadena de conexión (ajústala según tu entorno)
-        private readonly string connectionString = "Server=localhost;Database=monitorizacion_red;Uid=root;Pwd=;";
+        private string connectionString = "Server=localhost;Database=monitorizacion_red;Uid=root;Pwd=;";
+        private string usuarioLogeado;
+        private bool esNuevoPIN = false;
 
         public FrmLogin()
         {
             InitializeComponent();
-            // Asignación manual de eventos
             this.btnIngresar.Click += BtnIngresar_Click;
             this.btnCancelar.Click += BtnCancelar_Click;
-            this.AcceptButton = btnIngresar;   // Presionar Enter equivale a "Ingresar"
-            this.CancelButton = btnCancelar;   // Presionar Esc equivale a "Cancelar"
-
-            // Asegurar que la tabla usuarios exista y tenga al menos un admin
+            this.btnValidarPIN.Click += BtnValidarPIN_Click;
+            this.AcceptButton = btnIngresar;
+            this.CancelButton = btnCancelar;
             InicializarBaseDeDatos();
         }
 
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmLogin));
-            this.lblTitulo = new System.Windows.Forms.Label();
-            this.lblUsuario = new System.Windows.Forms.Label();
-            this.txtUsuario = new System.Windows.Forms.TextBox();
-            this.lblPassword = new System.Windows.Forms.Label();
-            this.txtPassword = new System.Windows.Forms.TextBox();
-            this.btnIngresar = new System.Windows.Forms.Button();
-            this.btnCancelar = new System.Windows.Forms.Button();
+            this.lblTitulo = new Label();
+            this.lblUsuario = new Label();
+            this.txtUsuario = new TextBox();
+            this.lblPassword = new Label();
+            this.txtPassword = new TextBox();
+            this.btnIngresar = new Button();
+            this.btnCancelar = new Button();
+            this.panelLogin = new Panel();
+            this.panelPIN = new Panel();
+            this.lblMensajePIN = new Label();
+            this.txtPIN = new TextBox();
+            this.btnValidarPIN = new Button();
+            this.panelLogin.SuspendLayout();
+            this.panelPIN.SuspendLayout();
             this.SuspendLayout();
-            // 
+
             // lblTitulo
-            // 
-            this.lblTitulo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(102)))), ((int)(((byte)(204)))));
-            this.lblTitulo.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblTitulo.BackColor = System.Drawing.Color.FromArgb(0, 102, 204);
+            this.lblTitulo.Dock = DockStyle.Top;
             this.lblTitulo.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
             this.lblTitulo.ForeColor = System.Drawing.Color.White;
             this.lblTitulo.Location = new System.Drawing.Point(0, 0);
             this.lblTitulo.Name = "lblTitulo";
-            this.lblTitulo.Size = new System.Drawing.Size(350, 50);
-            this.lblTitulo.TabIndex = 6;
+            this.lblTitulo.Size = new System.Drawing.Size(380, 50);
             this.lblTitulo.Text = "Iniciar Sesión";
             this.lblTitulo.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
+
+            // panelLogin
+            this.panelLogin.Controls.Add(this.lblUsuario);
+            this.panelLogin.Controls.Add(this.txtUsuario);
+            this.panelLogin.Controls.Add(this.lblPassword);
+            this.panelLogin.Controls.Add(this.txtPassword);
+            this.panelLogin.Controls.Add(this.btnIngresar);
+            this.panelLogin.Controls.Add(this.btnCancelar);
+            this.panelLogin.Location = new System.Drawing.Point(10, 60);
+            this.panelLogin.Name = "panelLogin";
+            this.panelLogin.Size = new System.Drawing.Size(360, 200);
+
             // lblUsuario
-            // 
-            this.lblUsuario.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(51)))), ((int)(((byte)(102)))));
-            this.lblUsuario.Location = new System.Drawing.Point(50, 80);
+            this.lblUsuario.ForeColor = System.Drawing.Color.FromArgb(0, 51, 102);
+            this.lblUsuario.Location = new System.Drawing.Point(20, 20);
             this.lblUsuario.Name = "lblUsuario";
             this.lblUsuario.Size = new System.Drawing.Size(80, 25);
-            this.lblUsuario.TabIndex = 5;
             this.lblUsuario.Text = "Usuario:";
-            // 
+
             // txtUsuario
-            // 
-            this.txtUsuario.Location = new System.Drawing.Point(140, 80);
+            this.txtUsuario.Location = new System.Drawing.Point(110, 20);
             this.txtUsuario.Name = "txtUsuario";
-            this.txtUsuario.Size = new System.Drawing.Size(150, 20);
-            this.txtUsuario.TabIndex = 4;
-            // 
+            this.txtUsuario.Size = new System.Drawing.Size(200, 20);
+
             // lblPassword
-            // 
-            this.lblPassword.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(51)))), ((int)(((byte)(102)))));
-            this.lblPassword.Location = new System.Drawing.Point(50, 120);
+            this.lblPassword.ForeColor = System.Drawing.Color.FromArgb(0, 51, 102);
+            this.lblPassword.Location = new System.Drawing.Point(20, 60);
             this.lblPassword.Name = "lblPassword";
             this.lblPassword.Size = new System.Drawing.Size(80, 25);
-            this.lblPassword.TabIndex = 3;
             this.lblPassword.Text = "Contraseña:";
-            // 
+
             // txtPassword
-            // 
-            this.txtPassword.Location = new System.Drawing.Point(140, 120);
+            this.txtPassword.Location = new System.Drawing.Point(110, 60);
             this.txtPassword.Name = "txtPassword";
-            this.txtPassword.Size = new System.Drawing.Size(150, 20);
-            this.txtPassword.TabIndex = 2;
+            this.txtPassword.Size = new System.Drawing.Size(200, 20);
             this.txtPassword.UseSystemPasswordChar = true;
-            // 
+
             // btnIngresar
-            // 
-            this.btnIngresar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(102)))), ((int)(((byte)(204)))));
-            this.btnIngresar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnIngresar.BackColor = System.Drawing.Color.FromArgb(0, 102, 204);
+            this.btnIngresar.FlatStyle = FlatStyle.Flat;
             this.btnIngresar.ForeColor = System.Drawing.Color.White;
-            this.btnIngresar.Location = new System.Drawing.Point(80, 170);
+            this.btnIngresar.Location = new System.Drawing.Point(60, 120);
             this.btnIngresar.Name = "btnIngresar";
-            this.btnIngresar.Size = new System.Drawing.Size(90, 30);
-            this.btnIngresar.TabIndex = 1;
+            this.btnIngresar.Size = new System.Drawing.Size(100, 35);
             this.btnIngresar.Text = "Ingresar";
             this.btnIngresar.UseVisualStyleBackColor = false;
-            // 
+
             // btnCancelar
-            // 
-            this.btnCancelar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
-            this.btnCancelar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCancelar.BackColor = System.Drawing.Color.FromArgb(100, 100, 100);
+            this.btnCancelar.FlatStyle = FlatStyle.Flat;
             this.btnCancelar.ForeColor = System.Drawing.Color.White;
-            this.btnCancelar.Location = new System.Drawing.Point(190, 170);
+            this.btnCancelar.Location = new System.Drawing.Point(180, 120);
             this.btnCancelar.Name = "btnCancelar";
-            this.btnCancelar.Size = new System.Drawing.Size(90, 30);
-            this.btnCancelar.TabIndex = 0;
+            this.btnCancelar.Size = new System.Drawing.Size(100, 35);
             this.btnCancelar.Text = "Cancelar";
             this.btnCancelar.UseVisualStyleBackColor = false;
-            // 
+
+            // panelPIN
+            this.panelPIN.Controls.Add(this.lblMensajePIN);
+            this.panelPIN.Controls.Add(this.txtPIN);
+            this.panelPIN.Controls.Add(this.btnValidarPIN);
+            this.panelPIN.Location = new System.Drawing.Point(10, 60);
+            this.panelPIN.Name = "panelPIN";
+            this.panelPIN.Size = new System.Drawing.Size(360, 200);
+            this.panelPIN.Visible = false;
+
+            // lblMensajePIN
+            this.lblMensajePIN.ForeColor = System.Drawing.Color.FromArgb(0, 51, 102);
+            this.lblMensajePIN.Location = new System.Drawing.Point(20, 20);
+            this.lblMensajePIN.Name = "lblMensajePIN";
+            this.lblMensajePIN.Size = new System.Drawing.Size(320, 40);
+            this.lblMensajePIN.Text = "Ingrese su PIN de seguridad:";
+
+            // txtPIN
+            this.txtPIN.Location = new System.Drawing.Point(110, 70);
+            this.txtPIN.Name = "txtPIN";
+            this.txtPIN.Size = new System.Drawing.Size(100, 20);
+            this.txtPIN.MaxLength = 4;
+            this.txtPIN.UseSystemPasswordChar = true;
+
+            // btnValidarPIN
+            this.btnValidarPIN.BackColor = System.Drawing.Color.FromArgb(0, 102, 204);
+            this.btnValidarPIN.FlatStyle = FlatStyle.Flat;
+            this.btnValidarPIN.ForeColor = System.Drawing.Color.White;
+            this.btnValidarPIN.Location = new System.Drawing.Point(110, 120);
+            this.btnValidarPIN.Name = "btnValidarPIN";
+            this.btnValidarPIN.Size = new System.Drawing.Size(120, 35);
+            this.btnValidarPIN.Text = "Validar PIN";
+            this.btnValidarPIN.UseVisualStyleBackColor = false;
+
             // FrmLogin
-            // 
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(248)))), ((int)(((byte)(255)))));
-            this.ClientSize = new System.Drawing.Size(350, 240);
-            this.Controls.Add(this.btnCancelar);
-            this.Controls.Add(this.btnIngresar);
-            this.Controls.Add(this.txtPassword);
-            this.Controls.Add(this.lblPassword);
-            this.Controls.Add(this.txtUsuario);
-            this.Controls.Add(this.lblUsuario);
+            this.BackColor = System.Drawing.Color.FromArgb(240, 248, 255);
+            this.ClientSize = new System.Drawing.Size(380, 280);
+            this.Controls.Add(this.panelLogin);
+            this.Controls.Add(this.panelPIN);
             this.Controls.Add(this.lblTitulo);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FrmLogin";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Load += new System.EventHandler(this.FrmLogin_Load);
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            this.StartPosition = FormStartPosition.CenterScreen;
+            this.Text = "Inicio de Sesión";
 
+            this.panelLogin.ResumeLayout(false);
+            this.panelPIN.ResumeLayout(false);
+            this.ResumeLayout(false);
         }
 
-        /// <summary>
-        /// Crea la tabla 'usuarios' si no existe e inserta un usuario administrador por defecto.
-        /// </summary>
         private void InicializarBaseDeDatos()
         {
             try
@@ -150,90 +179,28 @@ namespace SistemaMonitorizacionRed
                 using (MySqlConnection conn = new MySqlConnection(connectionString))
                 {
                     conn.Open();
-
-                    // Crear tabla si no existe
                     string createTable = @"
-                        CREATE TABLE IF NOT EXISTS usuarios (
-                            id INT AUTO_INCREMENT PRIMARY KEY,
-                            usuario VARCHAR(50) UNIQUE NOT NULL,
-                            password VARCHAR(255) NOT NULL,
-                            rol ENUM('Administrador','Usuario') DEFAULT 'Usuario',
-                            activo BOOLEAN DEFAULT TRUE
-                        )";
+                CREATE TABLE IF NOT EXISTS usuarios (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    usuario VARCHAR(50) UNIQUE NOT NULL,
+                    contraseña VARCHAR(64) NOT NULL,
+                    pin VARCHAR(64) NULL,
+                    rol VARCHAR(20) DEFAULT 'admin'
+                )";
                     using (MySqlCommand cmd = new MySqlCommand(createTable, conn))
                         cmd.ExecuteNonQuery();
 
-                    // Insertar admin por defecto si no hay ningún usuario
                     string checkAdmin = "SELECT COUNT(*) FROM usuarios";
                     using (MySqlCommand cmd = new MySqlCommand(checkAdmin, conn))
                     {
                         int count = Convert.ToInt32(cmd.ExecuteScalar());
                         if (count == 0)
                         {
-                            string insertAdmin = "INSERT INTO usuarios (usuario, password, rol) VALUES ('admin', 'admin123', 'Administrador')";
+                            string insertAdmin = "INSERT INTO usuarios (usuario, contraseña, rol) VALUES ('admin', @hash, 'admin')";
                             using (MySqlCommand cmdInsert = new MySqlCommand(insertAdmin, conn))
-                                cmdInsert.ExecuteNonQuery();
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                // Si falla la conexión, mostramos el error pero el login sigue intentando validar
-                MessageBox.Show($"No se pudo inicializar la base de datos: {ex.Message}\n\n" +
-                                "Asegúrate de que MySQL esté corriendo y la base de datos 'monitorizacion_red' exista.",
-                                "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-        }
-
-        private void BtnIngresar_Click(object sender, EventArgs e)
-        {
-            string usuario = txtUsuario.Text.Trim();
-            string password = txtPassword.Text;
-
-            if (string.IsNullOrEmpty(usuario) || string.IsNullOrEmpty(password))
-            {
-                MessageBox.Show("Ingrese usuario y contraseña.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            if (ValidarUsuario(usuario, password))
-            {
-                LoginExitoso = true;
-                this.Close();
-            }
-            else
-            {
-                MessageBox.Show("Usuario o contraseña incorrectos.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                txtPassword.Clear();
-                txtUsuario.Focus();
-            }
-        }
-
-        private void BtnCancelar_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
-
-        private bool ValidarUsuario(string usuario, string password)
-        {
-            try
-            {
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
-                {
-                    conn.Open();
-                    string query = "SELECT usuario, rol FROM usuarios WHERE usuario = @usuario AND password = @password AND activo = 1";
-                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@usuario", usuario);
-                        cmd.Parameters.AddWithValue("@password", password);
-                        using (MySqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            if (reader.Read())
                             {
-                                UsuarioActual = reader["usuario"].ToString();
-                                RolActual = reader["rol"].ToString();
-                                return true;
+                                cmdInsert.Parameters.AddWithValue("@hash", SHA256("admin"));
+                                cmdInsert.ExecuteNonQuery();
                             }
                         }
                     }
@@ -241,14 +208,139 @@ namespace SistemaMonitorizacionRed
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error de conexión a la base de datos: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"No se pudo inicializar la base de datos: {ex.Message}",
+                    "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-            return false;
         }
-
-        private void FrmLogin_Load(object sender, EventArgs e)
+        private void BtnIngresar_Click(object sender, EventArgs e)
         {
+            string entrada = txtUsuario.Text.Trim();
+            string pass = txtPassword.Text;
 
+            if (string.IsNullOrEmpty(entrada) || string.IsNullOrEmpty(pass))
+            {
+                MessageBox.Show("Ingrese usuario y contraseña.");
+                return;
+            }
+
+            string hash = SHA256(pass);
+
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            {
+                conn.Open();
+                string query = @"SELECT usuario, pin FROM usuarios 
+                                 WHERE usuario = @entrada 
+                                 AND contraseña = @hash";
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@entrada", entrada);
+                    cmd.Parameters.AddWithValue("@hash", hash);
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            usuarioLogeado = reader["usuario"].ToString();
+                            string pinHash = reader["pin"]?.ToString();
+
+                            if (string.IsNullOrEmpty(pinHash))
+                            {
+                                esNuevoPIN = true;
+                                panelLogin.Visible = false;
+                                panelPIN.Visible = true;
+                                this.AcceptButton = btnValidarPIN;
+                                lblMensajePIN.Text = "No tiene un PIN de seguridad. Ingrese un PIN de 4 dígitos y presione Validar PIN.";
+                            }
+                            else
+                            {
+                                esNuevoPIN = false;
+                                panelLogin.Visible = false;
+                                panelPIN.Visible = true;
+                                this.AcceptButton = btnValidarPIN;
+                                lblMensajePIN.Text = "Ingrese su PIN de seguridad:";
+                            }
+                            txtPIN.Text = "";
+                            txtPIN.Focus();
+                        }
+                        else
+                        {
+                            MessageBox.Show("Credenciales incorrectas.");
+                        }
+                    }
+                }
+            }
+        }
+        private void BtnValidarPIN_Click(object sender, EventArgs e)
+        {
+            string pin = txtPIN.Text.Trim();
+            if (pin.Length != 4 || !int.TryParse(pin, out _))
+            {
+                MessageBox.Show("El PIN debe ser exactamente 4 dígitos numéricos.");
+                return;
+            }
+
+            string hash = SHA256(pin);
+
+            if (esNuevoPIN)
+            {
+                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                {
+                    conn.Open();
+                    string query = "UPDATE usuarios SET pin = @hash WHERE usuario = @usr";
+                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@hash", hash);
+                        cmd.Parameters.AddWithValue("@usr", usuarioLogeado);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                MessageBox.Show("PIN configurado correctamente.");
+                AbrirSistema(usuarioLogeado);
+            }
+            else
+            {
+                string hashGuardado;
+                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                {
+                    conn.Open();
+                    string query = "SELECT pin FROM usuarios WHERE usuario = @usr";
+                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@usr", usuarioLogeado);
+                        hashGuardado = cmd.ExecuteScalar()?.ToString();
+                    }
+                }
+
+                if (hash == hashGuardado)
+                {
+                    AbrirSistema(usuarioLogeado);
+                }
+                else
+                {
+                    MessageBox.Show("PIN incorrecto.");
+                    txtPIN.Clear();
+                    txtPIN.Focus();
+                }
+            }
+        }
+        private void AbrirSistema(string usuario)
+        {
+            this.Hide();
+            FrmMain frm = new FrmMain(usuario, "admin");
+            frm.ShowDialog();
+            this.Close();
+        }
+        private void BtnCancelar_Click(object sender, EventArgs e)
+        {
+            this.AcceptButton = btnIngresar;
+            this.Close();
+        }
+        private string SHA256(string texto)
+        {
+            using (var sha = System.Security.Cryptography.SHA256.Create())
+            {
+                byte[] bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(texto));
+                return BitConverter.ToString(bytes).Replace("-", "").ToLower();
+            }
         }
     }
 }

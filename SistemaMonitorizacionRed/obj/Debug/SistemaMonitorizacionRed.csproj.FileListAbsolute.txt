@@ -134,3 +134,4 @@ C:\Users\Guillermo David\source\repos\SistemaMonitorizacionRed\SistemaMonitoriza
 C:\Users\Guillermo David\source\repos\SistemaMonitorizacionRed\SistemaMonitorizacionRed\obj\Debug\TREF.application
 C:\Users\Guillermo David\source\repos\SistemaMonitorizacionRed\SistemaMonitorizacionRed\obj\Debug\TREF.exe
 C:\Users\Guillermo David\source\repos\SistemaMonitorizacionRed\SistemaMonitorizacionRed\obj\Debug\TREF.pdb
+C:\Users\Guillermo David\source\repos\SistemaMonitorizacionRed\SistemaMonitorizacionRed\bin\Debug\Otp.NET.dll

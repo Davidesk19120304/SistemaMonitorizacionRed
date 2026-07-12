@@ -38,7 +38,6 @@
         private System.Windows.Forms.Label labelFiltroIPOrigen;
         private System.Windows.Forms.ComboBox cmbFiltroIPDestino;
         private System.Windows.Forms.Label labelFiltroIPDestino;
-        private System.Windows.Forms.Button btnAplicarFiltro;
         private System.Windows.Forms.Button btnLimpiarFiltros;
         private System.Windows.Forms.Label lblEstadisticasFiltro;
         private System.Windows.Forms.Label lblEstadisticasTiempoReal;
@@ -60,6 +59,8 @@
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.herramientasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.configuracionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cuentaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cambiarPINToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportarPaquetesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportarAlertasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -92,7 +93,6 @@
             this.labelFiltroIPOrigen = new System.Windows.Forms.Label();
             this.cmbFiltroIPDestino = new System.Windows.Forms.ComboBox();
             this.labelFiltroIPDestino = new System.Windows.Forms.Label();
-            this.btnAplicarFiltro = new System.Windows.Forms.Button();
             this.btnLimpiarFiltros = new System.Windows.Forms.Button();
             this.lblEstadisticasTiempoReal = new System.Windows.Forms.Label();
             this.dgvPaquetes = new System.Windows.Forms.DataGridView();
@@ -126,7 +126,9 @@
             // herramientasToolStripMenuItem
             // 
             this.herramientasToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.configuracionToolStripMenuItem});
+            this.configuracionToolStripMenuItem,
+            this.cuentaToolStripMenuItem,
+            this.cambiarPINToolStripMenuItem});
             this.herramientasToolStripMenuItem.Name = "herramientasToolStripMenuItem";
             this.herramientasToolStripMenuItem.Size = new System.Drawing.Size(90, 20);
             this.herramientasToolStripMenuItem.Text = "Herramientas";
@@ -137,6 +139,20 @@
             this.configuracionToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.configuracionToolStripMenuItem.Text = "Configuración";
             this.configuracionToolStripMenuItem.Click += new System.EventHandler(this.BtnConfig_Click);
+            // 
+            // cuentaToolStripMenuItem
+            // 
+            this.cuentaToolStripMenuItem.Name = "cuentaToolStripMenuItem";
+            this.cuentaToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.cuentaToolStripMenuItem.Text = "Cuenta";
+            this.cuentaToolStripMenuItem.Click += new System.EventHandler(this.cuentaToolStripMenuItem_Click);
+            // 
+            // cambiarPINToolStripMenuItem
+            // 
+            this.cambiarPINToolStripMenuItem.Name = "cambiarPINToolStripMenuItem";
+            this.cambiarPINToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.cambiarPINToolStripMenuItem.Text = "Cambiar PIN";
+            this.cambiarPINToolStripMenuItem.Click += new System.EventHandler(this.cambiarPINToolStripMenuItem_Click_1);
             // 
             // exportarToolStripMenuItem
             // 
@@ -487,7 +503,6 @@
             this.gbFiltros.Controls.Add(this.labelFiltroIPOrigen);
             this.gbFiltros.Controls.Add(this.cmbFiltroIPDestino);
             this.gbFiltros.Controls.Add(this.labelFiltroIPDestino);
-            this.gbFiltros.Controls.Add(this.btnAplicarFiltro);
             this.gbFiltros.Controls.Add(this.btnLimpiarFiltros);
             this.gbFiltros.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.gbFiltros.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(51)))), ((int)(((byte)(102)))));
@@ -544,25 +559,12 @@
             this.labelFiltroIPDestino.TabIndex = 4;
             this.labelFiltroIPDestino.Text = "IP Destino:";
             // 
-            // btnAplicarFiltro
-            // 
-            this.btnAplicarFiltro.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(102)))), ((int)(((byte)(204)))));
-            this.btnAplicarFiltro.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnAplicarFiltro.ForeColor = System.Drawing.Color.White;
-            this.btnAplicarFiltro.Location = new System.Drawing.Point(324, 43);
-            this.btnAplicarFiltro.Name = "btnAplicarFiltro";
-            this.btnAplicarFiltro.Size = new System.Drawing.Size(76, 24);
-            this.btnAplicarFiltro.TabIndex = 5;
-            this.btnAplicarFiltro.Text = "Aplicar";
-            this.btnAplicarFiltro.UseVisualStyleBackColor = false;
-            this.btnAplicarFiltro.Click += new System.EventHandler(this.btnAplicarFiltro_Click);
-            // 
             // btnLimpiarFiltros
             // 
             this.btnLimpiarFiltros.BackColor = System.Drawing.Color.LightGray;
             this.btnLimpiarFiltros.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnLimpiarFiltros.ForeColor = System.Drawing.Color.Black;
-            this.btnLimpiarFiltros.Location = new System.Drawing.Point(324, 84);
+            this.btnLimpiarFiltros.Location = new System.Drawing.Point(320, 26);
             this.btnLimpiarFiltros.Name = "btnLimpiarFiltros";
             this.btnLimpiarFiltros.Size = new System.Drawing.Size(76, 24);
             this.btnLimpiarFiltros.TabIndex = 6;
@@ -625,6 +627,7 @@
             this.Controls.Add(this.headerPanel);
             this.Controls.Add(this.menuStrip);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
             this.MinimumSize = new System.Drawing.Size(774, 482);
             this.Name = "FrmMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -648,5 +651,9 @@
             this.PerformLayout();
 
         }
+
+        private System.Windows.Forms.ToolStripMenuItem cuentaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem cambiarPINToolStripMenuItem;
     }
 }

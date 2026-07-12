@@ -3,13 +3,14 @@ using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
+using System.Collections.Generic;
 
 namespace SistemaMonitorizacionRed
 {
     public partial class HistorialAlertas : Form
     {
         private string connectionString = "Server=localhost;Database=monitorizacion_red;Uid=root;Pwd=;";
-
+        public bool ModoOscuro { get; set; } = false;
         public HistorialAlertas()
         {
             InitializeComponent();
@@ -95,8 +96,77 @@ namespace SistemaMonitorizacionRed
 
             dtpFecha.Format = DateTimePickerFormat.Short;
             dtpFecha.Value = DateTime.Today;
-        }
 
+            // Hacer que los cambios en fecha y severidad actualicen automáticamente
+            dtpFecha.ValueChanged += (s, ev) => CargarAlertas();
+            cmbFiltroSeveridad.SelectedIndexChanged += (s, ev) => CargarAlertas();
+
+            // Cargar todas las alertas al abrir (sin filtro de fecha)
+            chkFiltrarFecha.Checked = false;
+            CargarAlertas();
+            if (ModoOscuro)
+                AplicarTemaOscuro();
+            else
+                AplicarTemaClaro();
+        }
+        private void AplicarTemaOscuro()
+        {
+            this.BackColor = Color.FromArgb(30, 30, 35);
+            this.ForeColor = Color.WhiteSmoke;
+
+            // DataGridView
+            dgvAlertas.BackgroundColor = Color.FromArgb(50, 50, 55);
+            dgvAlertas.DefaultCellStyle.BackColor = Color.FromArgb(60, 60, 65);
+            dgvAlertas.DefaultCellStyle.ForeColor = Color.WhiteSmoke;
+            dgvAlertas.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(75, 75, 85);
+            dgvAlertas.GridColor = Color.FromArgb(80, 80, 85);
+            // Cambiar solo el encabezado del DataGridView
+            dgvAlertas.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(70, 70, 75);
+            dgvAlertas.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dgvAlertas.EnableHeadersVisualStyles = false;
+
+            // ComboBox y CheckBox
+            cmbFiltroSeveridad.BackColor = Color.FromArgb(70, 70, 75);
+            cmbFiltroSeveridad.ForeColor = Color.White;
+            chkFiltrarFecha.ForeColor = Color.WhiteSmoke;
+            lblTotal.ForeColor = Color.WhiteSmoke;
+            // Oscurecer el GroupBox de filtros
+            gbFiltros.BackColor = Color.FromArgb(40, 40, 45);
+            gbFiltros.ForeColor = Color.WhiteSmoke;
+            // Labels de filtros
+            lblFiltroSeveridad.ForeColor = Color.WhiteSmoke;
+            lblFecha.ForeColor = Color.WhiteSmoke;
+            // Cambiar el headerPanel a color oscuro
+            headerPanel.BackColor = Color.FromArgb(45, 45, 48);
+            titleLabel.ForeColor = Color.WhiteSmoke;
+        }
+        private void AplicarTemaClaro()
+        {
+            this.BackColor = Color.FromArgb(240, 248, 255);
+            this.ForeColor = Color.Black;
+
+            dgvAlertas.BackgroundColor = Color.White;
+            dgvAlertas.DefaultCellStyle.BackColor = Color.White;
+            dgvAlertas.DefaultCellStyle.ForeColor = Color.Black;
+            dgvAlertas.AlternatingRowsDefaultCellStyle.BackColor = Color.WhiteSmoke;
+            dgvAlertas.GridColor = Color.LightGray;
+            // Restaurar el encabezado del DataGridView al azul corporativo
+            dgvAlertas.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(0, 102, 204);
+            dgvAlertas.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dgvAlertas.EnableHeadersVisualStyles = false;
+
+            cmbFiltroSeveridad.BackColor = Color.White;
+            cmbFiltroSeveridad.ForeColor = Color.Black;
+            chkFiltrarFecha.ForeColor = Color.Black;
+            lblTotal.ForeColor = Color.Black;
+            gbFiltros.BackColor = Color.White;
+            gbFiltros.ForeColor = Color.FromArgb(0, 51, 102);
+            lblFiltroSeveridad.ForeColor = Color.Black;
+            lblFecha.ForeColor = Color.Black;
+            // Restaurar el headerPanel a color azul corporativo
+            headerPanel.BackColor = Color.FromArgb(0, 102, 204);
+            titleLabel.ForeColor = Color.White;
+        }
         private void CargarAlertas()
         {
             try
@@ -106,26 +176,35 @@ namespace SistemaMonitorizacionRed
                     conn.Open();
                     string query = "SELECT id, tipo, descripcion, severidad, ip_involucrada, timestamp FROM alertas WHERE 1=1";
 
+                    List<MySqlParameter> parametros = new List<MySqlParameter>();
+
                     if (cmbFiltroSeveridad.SelectedIndex > 0)
                     {
-                        string severidad = cmbFiltroSeveridad.SelectedItem.ToString();
-                        query += $" AND severidad = '{severidad}'";
+                        query += " AND severidad = @severidad";
+                        parametros.Add(new MySqlParameter("@severidad", cmbFiltroSeveridad.SelectedItem.ToString()));
                     }
 
                     if (chkFiltrarFecha.Checked)
                     {
-                        string fecha = dtpFecha.Value.ToString("yyyy-MM-dd");
-                        query += $" AND DATE(timestamp) = '{fecha}'";
+                        query += " AND DATE(timestamp) = @fecha";
+                        parametros.Add(new MySqlParameter("@fecha", dtpFecha.Value.ToString("yyyy-MM-dd")));
                     }
 
                     query += " ORDER BY timestamp DESC";
 
-                    MySqlDataAdapter adapter = new MySqlDataAdapter(query, conn);
-                    DataTable dt = new DataTable();
-                    adapter.Fill(dt);
+                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddRange(parametros.ToArray());
 
-                    dgvAlertas.DataSource = dt;
-                    lblTotal.Text = $"Total: {dt.Rows.Count} alertas";
+                        using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd))
+                        {
+                            DataTable dt = new DataTable();
+                            adapter.Fill(dt);
+
+                            dgvAlertas.DataSource = dt;
+                            lblTotal.Text = $"Total: {dt.Rows.Count} alertas";
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -170,17 +249,6 @@ namespace SistemaMonitorizacionRed
                     break;
             }
         }
-
-        private void btnActualizar_Click(object sender, EventArgs e)
-        {
-            CargarAlertas();
-        }
-
-        private void btnCerrar_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
-
         private void chkFiltrarFecha_CheckedChanged(object sender, EventArgs e)
         {
             dtpFecha.Enabled = chkFiltrarFecha.Checked;

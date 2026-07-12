@@ -11,24 +11,14 @@ namespace SistemaMonitorizacionRed
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            // Mostrar pantalla de carga (se cierra automáticamente después de 3 segundos)
+            // Pantalla de introducción (3 segundos)
             using (FrmIntroduccion splash = new FrmIntroduccion())
             {
-                splash.ShowDialog(); // Bloquea hasta que se cierre el splash
+                splash.ShowDialog();
             }
 
-            // Ahora mostrar el login
-            using (FrmLogin login = new FrmLogin())
-            {
-                login.ShowDialog();
-
-                if (login.LoginExitoso)
-                {
-                    // Iniciar la aplicación principal
-                    Application.Run(new FrmMain(login.UsuarioActual, login.RolActual));
-                }
-                // Si el login falla, la aplicación termina
-            }
+            // Mostrar login. Si el usuario inicia sesión, FrmLogin abre FrmMain internamente.
+            Application.Run(new FrmLogin());
         }
     }
 }

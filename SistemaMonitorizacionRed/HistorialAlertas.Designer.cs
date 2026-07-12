@@ -18,8 +18,6 @@
             this.cmbFiltroSeveridad = new System.Windows.Forms.ComboBox();
             this.dtpFecha = new System.Windows.Forms.DateTimePicker();
             this.chkFiltrarFecha = new System.Windows.Forms.CheckBox();
-            this.btnActualizar = new System.Windows.Forms.Button();
-            this.btnCerrar = new System.Windows.Forms.Button();
             this.lblFiltroSeveridad = new System.Windows.Forms.Label();
             this.lblFecha = new System.Windows.Forms.Label();
             this.lblTotal = new System.Windows.Forms.Label();
@@ -73,34 +71,6 @@
             this.chkFiltrarFecha.UseVisualStyleBackColor = true;
             this.chkFiltrarFecha.CheckedChanged += new System.EventHandler(this.chkFiltrarFecha_CheckedChanged);
             // 
-            // btnActualizar
-            // 
-            this.btnActualizar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(102)))), ((int)(((byte)(204)))));
-            this.btnActualizar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnActualizar.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnActualizar.ForeColor = System.Drawing.Color.White;
-            this.btnActualizar.Location = new System.Drawing.Point(580, 30);
-            this.btnActualizar.Name = "btnActualizar";
-            this.btnActualizar.Size = new System.Drawing.Size(100, 30);
-            this.btnActualizar.TabIndex = 5;
-            this.btnActualizar.Text = "Actualizar";
-            this.btnActualizar.UseVisualStyleBackColor = false;
-            this.btnActualizar.Click += new System.EventHandler(this.btnActualizar_Click);
-            // 
-            // btnCerrar
-            // 
-            this.btnCerrar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
-            this.btnCerrar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCerrar.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnCerrar.ForeColor = System.Drawing.Color.White;
-            this.btnCerrar.Location = new System.Drawing.Point(700, 30);
-            this.btnCerrar.Name = "btnCerrar";
-            this.btnCerrar.Size = new System.Drawing.Size(100, 30);
-            this.btnCerrar.TabIndex = 6;
-            this.btnCerrar.Text = "Cerrar";
-            this.btnCerrar.UseVisualStyleBackColor = false;
-            this.btnCerrar.Click += new System.EventHandler(this.btnCerrar_Click);
-            // 
             // lblFiltroSeveridad
             // 
             this.lblFiltroSeveridad.AutoSize = true;
@@ -145,14 +115,17 @@
             // 
             // titleLabel
             // 
+            this.titleLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
             this.titleLabel.AutoSize = true;
             this.titleLabel.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
             this.titleLabel.ForeColor = System.Drawing.Color.White;
-            this.titleLabel.Location = new System.Drawing.Point(20, 12);
+            this.titleLabel.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.titleLabel.Location = new System.Drawing.Point(32, 9);
             this.titleLabel.Name = "titleLabel";
             this.titleLabel.Size = new System.Drawing.Size(208, 25);
             this.titleLabel.TabIndex = 0;
             this.titleLabel.Text = "📋 Historial de Alertas";
+            this.titleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // gbFiltros
             // 
@@ -162,8 +135,6 @@
             this.gbFiltros.Controls.Add(this.chkFiltrarFecha);
             this.gbFiltros.Controls.Add(this.lblFecha);
             this.gbFiltros.Controls.Add(this.dtpFecha);
-            this.gbFiltros.Controls.Add(this.btnActualizar);
-            this.gbFiltros.Controls.Add(this.btnCerrar);
             this.gbFiltros.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.gbFiltros.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(51)))), ((int)(((byte)(102)))));
             this.gbFiltros.Location = new System.Drawing.Point(20, 70);
@@ -206,8 +177,6 @@
         private System.Windows.Forms.ComboBox cmbFiltroSeveridad;
         private System.Windows.Forms.DateTimePicker dtpFecha;
         private System.Windows.Forms.CheckBox chkFiltrarFecha;
-        private System.Windows.Forms.Button btnActualizar;
-        private System.Windows.Forms.Button btnCerrar;
         private System.Windows.Forms.Label lblFiltroSeveridad;
         private System.Windows.Forms.Label lblFecha;
         private System.Windows.Forms.Label lblTotal;
