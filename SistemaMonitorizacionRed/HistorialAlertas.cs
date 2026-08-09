@@ -2,7 +2,8 @@
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
-using MySql.Data.MySqlClient;
+using Npgsql;
+using NpgsqlTypes;
 using System.Collections.Generic;
 
 namespace SistemaMonitorizacionRed
@@ -169,48 +170,47 @@ namespace SistemaMonitorizacionRed
         }
         private void CargarAlertas()
         {
-            try
+            string cacheKey = $"alertas_{cmbFiltroSeveridad.SelectedIndex}_{dtpFecha.Value:yyyyMMdd}_{chkFiltrarFecha.Checked}";
+
+            DataTable dt = CacheHelper.GetOrSet(cacheKey, () =>
             {
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                DataTable result = new DataTable();
+                try
                 {
-                    conn.Open();
-                    string query = "SELECT id, tipo, descripcion, severidad, ip_involucrada, timestamp FROM alertas WHERE 1=1";
-
-                    List<MySqlParameter> parametros = new List<MySqlParameter>();
-
-                    if (cmbFiltroSeveridad.SelectedIndex > 0)
+                    using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
                     {
-                        query += " AND severidad = @severidad";
-                        parametros.Add(new MySqlParameter("@severidad", cmbFiltroSeveridad.SelectedItem.ToString()));
-                    }
+                        conn.Open();
+                        string query = "SELECT id, tipo, descripcion, severidad, ip_involucrada, \"timestamp\" FROM alertas WHERE 1=1";
 
-                    if (chkFiltrarFecha.Checked)
-                    {
-                        query += " AND DATE(timestamp) = @fecha";
-                        parametros.Add(new MySqlParameter("@fecha", dtpFecha.Value.ToString("yyyy-MM-dd")));
-                    }
+                        if (cmbFiltroSeveridad.SelectedIndex > 0)
+                            query += " AND severidad = @severidad";
+                        if (chkFiltrarFecha.Checked)
+                            query += " AND DATE(\"timestamp\") = @fecha";
+                        query += " ORDER BY \"timestamp\" DESC";
 
-                    query += " ORDER BY timestamp DESC";
-
-                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddRange(parametros.ToArray());
-
-                        using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd))
+                        using (NpgsqlCommand cmd = new NpgsqlCommand(query, conn))
                         {
-                            DataTable dt = new DataTable();
-                            adapter.Fill(dt);
+                            if (cmbFiltroSeveridad.SelectedIndex > 0)
+                                cmd.Parameters.AddWithValue("@severidad", cmbFiltroSeveridad.SelectedItem.ToString());
+                            if (chkFiltrarFecha.Checked)
+                                cmd.Parameters.AddWithValue("@fecha", dtpFecha.Value.ToString("yyyy-MM-dd"));
 
-                            dgvAlertas.DataSource = dt;
-                            lblTotal.Text = $"Total: {dt.Rows.Count} alertas";
+                            using (NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(cmd))
+                            {
+                                adapter.Fill(result);
+                            }
                         }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al cargar alertas: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("Error cargando alertas: " + ex.Message);
+                }
+                return result;
+            }, TimeSpan.FromSeconds(30));
+
+            dgvAlertas.DataSource = dt;
+            lblTotal.Text = $"Total: {dt.Rows.Count} alertas";
         }
 
         // Evento para colorear filas según severidad

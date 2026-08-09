@@ -1,6 +1,5 @@
 ﻿using LiveCharts;                          // SeriesCollection, LineSeries, Axis, LegendLocation
 using LiveCharts.Wpf;                      // CartesianChart (usa internamente System.Windows.Media.Brushes)
-using MySql.Data.MySqlClient;              // Conexión y comandos a MySQL
 using PacketDotNet;                        // Parseo y extracción de paquetes (IP, TCP, UDP, ICMP, IGMP)
 using PdfSharp.Drawing;                     // XGraphics, XFont, XBrushes, XPens, XStringFormats, XColor
 using PdfSharp.Fonts;                       // IFontResolver, FontResolverInfo, GlobalFontSettings
@@ -17,6 +16,9 @@ using System.Net.NetworkInformation;        // NetworkInterface, Ping, IPStatus
 using System.Runtime.InteropServices;       // DllImport, Marshal, StructLayout
 using System.Text;
 using System.Windows.Forms;
+using Npgsql;
+using NpgsqlTypes;
+using System.Threading.Tasks;
 
 namespace SistemaMonitorizacionRed
 {
@@ -99,8 +101,8 @@ namespace SistemaMonitorizacionRed
         private Timer timerNotificaciones;
         private bool procesandoCola = false;
 
-        // --- Conexión a MySQL ---
-        private string connectionString = "Server=localhost;Database=monitorizacion_red;Uid=root;Pwd=;";
+        // --- Conexión a BD
+        private string connectionString = "Host=localhost;Database=monitorizacion_red;Username=postgres;Password=Theflashtemp*123";
 
         #endregion
 
@@ -362,21 +364,21 @@ namespace SistemaMonitorizacionRed
 
                 try
                 {
-                    using (MySqlConnection conn = new MySqlConnection(connectionString + ";Connect Timeout=5"))
+                    using (NpgsqlConnection conn = new NpgsqlConnection(connectionString + ";Connect Timeout=5"))
                     {
                         conn.Open();
 
                         string queryOrigen = "SELECT DISTINCT ip_origen FROM paquetes WHERE ip_origen IS NOT NULL AND ip_origen != '' ORDER BY ip_origen";
-                        using (MySqlCommand cmd = new MySqlCommand(queryOrigen, conn))
-                        using (MySqlDataReader reader = cmd.ExecuteReader())
+                        using (NpgsqlCommand cmd = new NpgsqlCommand(queryOrigen, conn))
+                        using (NpgsqlDataReader reader = cmd.ExecuteReader())
                         {
                             while (reader.Read())
                                 ipsOrigen.Add(reader["ip_origen"].ToString());
                         }
 
                         string queryDestino = "SELECT DISTINCT ip_destino FROM paquetes WHERE ip_destino IS NOT NULL AND ip_destino != '' ORDER BY ip_destino";
-                        using (MySqlCommand cmd = new MySqlCommand(queryDestino, conn))
-                        using (MySqlDataReader reader = cmd.ExecuteReader())
+                        using (NpgsqlCommand cmd = new NpgsqlCommand(queryDestino, conn))
+                        using (NpgsqlDataReader reader = cmd.ExecuteReader())
                         {
                             while (reader.Read())
                                 ipsDestino.Add(reader["ip_destino"].ToString());
@@ -588,7 +590,7 @@ namespace SistemaMonitorizacionRed
                     }
                 }
 
-                GuardarPaqueteEnBD(paqueteInfo);
+                _ = GuardarPaqueteEnBDAsync(paqueteInfo);
 
                 // Insertar al inicio de la lista en memoria (más reciente primero)
                 lock (todosLosPaquetes)
@@ -607,35 +609,38 @@ namespace SistemaMonitorizacionRed
         }
 
         /// <summary>
-        /// Inserta un paquete en la tabla 'paquetes' de MySQL.
+        /// Guarda un paquete en la base de datos PostgreSQL de forma asíncrona.
         /// </summary>
-        private void GuardarPaqueteEnBD(PaqueteInfo p)
+        private async Task GuardarPaqueteEnBDAsync(PaqueteInfo p)
         {
-            try
+            await Task.Run(() =>
             {
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                try
                 {
-                    conn.Open();
-                    string query = @"INSERT INTO paquetes (hora, ip_origen, ip_destino, protocolo, puerto_origen, puerto_destino, tamaño, informacion_adicional) 
-                                     VALUES (@hora, @ip_origen, @ip_destino, @protocolo, @puerto_origen, @puerto_destino, @tamaño, @info)";
-                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
                     {
-                        cmd.Parameters.AddWithValue("@hora", DateTime.Parse(p.Hora));
-                        cmd.Parameters.AddWithValue("@ip_origen", p.IPOrigen ?? "");
-                        cmd.Parameters.AddWithValue("@ip_destino", p.IPDestino ?? "");
-                        cmd.Parameters.AddWithValue("@protocolo", p.Protocolo ?? "");
-                        cmd.Parameters.AddWithValue("@puerto_origen", p.PuertoOrigen > 0 ? p.PuertoOrigen : 0);
-                        cmd.Parameters.AddWithValue("@puerto_destino", p.PuertoDestino > 0 ? p.PuertoDestino : 0);
-                        cmd.Parameters.AddWithValue("@tamaño", p.Tamaño);
-                        cmd.Parameters.AddWithValue("@info", p.InformacionAdicional ?? "");
-                        cmd.ExecuteNonQuery();
+                        conn.Open();
+                        string query = @"INSERT INTO paquetes (hora, ip_origen, ip_destino, protocolo, puerto_origen, puerto_destino, tamaño, informacion_adicional) 
+                                 VALUES (@hora, @ip_origen, @ip_destino, @protocolo, @puerto_origen, @puerto_destino, @tamaño, @info)";
+                        using (NpgsqlCommand cmd = new NpgsqlCommand(query, conn))
+                        {
+                            cmd.Parameters.AddWithValue("@hora", DateTime.Parse(p.Hora));
+                            cmd.Parameters.AddWithValue("@ip_origen", p.IPOrigen ?? "");
+                            cmd.Parameters.AddWithValue("@ip_destino", p.IPDestino ?? "");
+                            cmd.Parameters.AddWithValue("@protocolo", p.Protocolo ?? "");
+                            cmd.Parameters.AddWithValue("@puerto_origen", p.PuertoOrigen > 0 ? p.PuertoOrigen : 0);
+                            cmd.Parameters.AddWithValue("@puerto_destino", p.PuertoDestino > 0 ? p.PuertoDestino : 0);
+                            cmd.Parameters.AddWithValue("@tamaño", p.Tamaño);
+                            cmd.Parameters.AddWithValue("@info", p.InformacionAdicional ?? "");
+                            cmd.ExecuteNonQuery();
+                        }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine("Error guardando en BD: " + ex.Message);
-            }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("Error guardando en BD: " + ex.Message);
+                }
+            });
         }
 
         /// <summary>
@@ -731,7 +736,7 @@ namespace SistemaMonitorizacionRed
                 DateTime.Now - ultimaAlertaTrafico > cooldown)
             {
                 string desc = $"Pico anómalo detectado: {paquetesPorSegundo} paq/s (media={media:F1}, sigma={desviacion:F1})";
-                alertaHelper.GuardarAlerta("PICO_ADAPTATIVO", desc, "Media", null);
+                _ = alertaHelper.GuardarAlertaAsync("PICO_ADAPTATIVO", desc, "Media", null);
                 MostrarNotificacionEmergente(desc, Color.FromArgb(200, 50, 50));
                 ultimaAlertaTrafico = DateTime.Now;
             }
@@ -752,7 +757,7 @@ namespace SistemaMonitorizacionRed
                 DateTime.Now - ultimaAlertaICMP > cooldown)
             {
                 string desc = $"ICMP flood anómalo: {icmpPorSegundo} icmp/s (media={media:F1}, sigma={desviacion:F1})";
-                alertaHelper.GuardarAlerta("ICMP_FLOOD_ADAPT", desc, "Media", null);
+                _ = alertaHelper.GuardarAlertaAsync("ICMP_FLOOD_ADAPT", desc, "Media", null);
                 MostrarNotificacionEmergente(desc, Color.FromArgb(200, 50, 50));
                 ultimaAlertaICMP = DateTime.Now;
             }
@@ -775,7 +780,7 @@ namespace SistemaMonitorizacionRed
             if (intentosEscaneo[ipOrigen].Count >= umbralEscaneo)
             {
                 string desc = $"Posible escaneo de puertos desde {ipOrigen}. Puertos distintos: {intentosEscaneo[ipOrigen].Count}.";
-                alertaHelper.GuardarAlerta("ESCANEO_PUERTOS", desc, "Alta", ipOrigen);
+                _ = alertaHelper.GuardarAlertaAsync("ESCANEO_PUERTOS", desc, "Alta", ipOrigen);
                 MostrarNotificacionEmergente(desc, Color.FromArgb(200, 50, 50));
                 intentosEscaneo[ipOrigen].Clear();
             }
@@ -802,7 +807,7 @@ namespace SistemaMonitorizacionRed
             {
                 string desc = $"Posible ataque de fuerza bruta desde {ipOrigen} al puerto {puertoDestino}. " +
                               $"{intentosFuerzaBruta[ipOrigen][puertoDestino].Count} intentos en {ventanaFuerzaBrutaSegundos}s.";
-                alertaHelper.GuardarAlerta("FUERZA_BRUTA", desc, "Alta", ipOrigen);
+                _ = alertaHelper.GuardarAlertaAsync("FUERZA_BRUTA", desc, "Alta", ipOrigen);
                 MostrarNotificacionEmergente(desc, Color.FromArgb(200, 50, 50));
                 intentosFuerzaBruta[ipOrigen][puertoDestino].Clear();
             }
@@ -828,7 +833,7 @@ namespace SistemaMonitorizacionRed
             if (ipDistintas >= umbralEscaneoVertical)
             {
                 string desc = $"Posible escaneo vertical al puerto {puertoDestino}: {ipDistintas} IPs diferentes en {ventanaEscaneoVerticalSegundos}s.";
-                alertaHelper.GuardarAlerta("ESCANEO_VERTICAL", desc, "Alta", null);
+                _= alertaHelper.GuardarAlertaAsync("ESCANEO_VERTICAL", desc, "Alta", null);
                 MostrarNotificacionEmergente(desc, Color.FromArgb(200, 50, 50));
                 intentosEscaneoVertical[puertoDestino].Clear();
             }
@@ -997,11 +1002,11 @@ namespace SistemaMonitorizacionRed
 
             try
             {
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
                 {
                     conn.Open();
                     string query = "SELECT COUNT(*) FROM usuarios WHERE usuario = @usr AND contraseña = @hash";
-                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    using (NpgsqlCommand cmd = new NpgsqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@usr", usuarioActual);
                         cmd.Parameters.AddWithValue("@hash", hashActual);
@@ -1048,11 +1053,11 @@ namespace SistemaMonitorizacionRed
 
                         try
                         {
-                            using (MySqlConnection conn = new MySqlConnection(connectionString))
+                            using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
                             {
                                 conn.Open();
                                 string query = "UPDATE usuarios SET contraseña = @hash WHERE usuario = @usr";
-                                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                                using (NpgsqlCommand cmd = new NpgsqlCommand(query, conn))
                                 {
                                     cmd.Parameters.AddWithValue("@hash", nuevoHash);
                                     cmd.Parameters.AddWithValue("@usr", usuarioActual);
@@ -1095,12 +1100,12 @@ namespace SistemaMonitorizacionRed
 
             try
             {
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
                 {
                     conn.Open();
 
                     string checkQuery = "SELECT COUNT(*) FROM usuarios WHERE usuario = @nuevo";
-                    using (MySqlCommand cmdCheck = new MySqlCommand(checkQuery, conn))
+                    using (NpgsqlCommand cmdCheck = new NpgsqlCommand(checkQuery, conn))
                     {
                         cmdCheck.Parameters.AddWithValue("@nuevo", nuevoUsuario);
                         if (Convert.ToInt32(cmdCheck.ExecuteScalar()) > 0)
@@ -1112,7 +1117,7 @@ namespace SistemaMonitorizacionRed
                     }
 
                     string updateQuery = "UPDATE usuarios SET usuario = @nuevo WHERE usuario = @actual";
-                    using (MySqlCommand cmdUpdate = new MySqlCommand(updateQuery, conn))
+                    using (NpgsqlCommand cmdUpdate = new NpgsqlCommand(updateQuery, conn))
                     {
                         cmdUpdate.Parameters.AddWithValue("@nuevo", nuevoUsuario);
                         cmdUpdate.Parameters.AddWithValue("@actual", usuarioActual);
@@ -1156,11 +1161,11 @@ namespace SistemaMonitorizacionRed
 
             try
             {
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
                 {
                     conn.Open();
                     string query = "SELECT pin FROM usuarios WHERE usuario = @usr";
-                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    using (NpgsqlCommand cmd = new NpgsqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@usr", usuarioActual);
                         string hashGuardado = cmd.ExecuteScalar()?.ToString();
@@ -1194,11 +1199,11 @@ namespace SistemaMonitorizacionRed
             string nuevoHash = SHA256(nuevoPin);
             try
             {
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
                 {
                     conn.Open();
                     string query = "UPDATE usuarios SET pin = @hash WHERE usuario = @usr";
-                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    using (NpgsqlCommand cmd = new NpgsqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@hash", nuevoHash);
                         cmd.Parameters.AddWithValue("@usr", usuarioActual);
@@ -1292,16 +1297,16 @@ namespace SistemaMonitorizacionRed
         {
             try
             {
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
                 {
                     conn.Open();
                     string query = @"SELECT hora, ip_origen, ip_destino, protocolo, puerto_origen, puerto_destino, tamaño, informacion_adicional 
                              FROM paquetes WHERE hora BETWEEN @desde AND @hasta ORDER BY hora DESC";
-                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    using (NpgsqlCommand cmd = new NpgsqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@desde", fechaDesde);
                         cmd.Parameters.AddWithValue("@hasta", fechaHasta);
-                        using (MySqlDataReader reader = cmd.ExecuteReader())
+                        using (NpgsqlDataReader reader = cmd.ExecuteReader())
                         {
                             using (StreamWriter sw = new StreamWriter(ruta, false, Encoding.UTF8))
                             {
@@ -1388,16 +1393,16 @@ namespace SistemaMonitorizacionRed
         {
             try
             {
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
                 {
                     conn.Open();
-                    string query = @"SELECT tipo, descripcion, severidad, ip_involucrada, timestamp 
-                             FROM alertas WHERE timestamp BETWEEN @desde AND @hasta ORDER BY timestamp DESC";
-                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    string query = @"SELECT tipo, descripcion, severidad, ip_involucrada, ""timestamp"" 
+                             FROM alertas WHERE ""timestamp"" BETWEEN @desde AND @hasta ORDER BY timestamp DESC";
+                    using (NpgsqlCommand cmd = new NpgsqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@desde", fechaDesde);
                         cmd.Parameters.AddWithValue("@hasta", fechaHasta);
-                        using (MySqlDataReader reader = cmd.ExecuteReader())
+                        using (NpgsqlDataReader reader = cmd.ExecuteReader())
                         {
                             using (StreamWriter sw = new StreamWriter(ruta, false, Encoding.UTF8))
                             {
@@ -1471,16 +1476,16 @@ namespace SistemaMonitorizacionRed
         {
             try
             {
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
                 {
                     conn.Open();
                     string query = @"SELECT hora, ip_origen, ip_destino, protocolo, puerto_origen, puerto_destino, tamaño, informacion_adicional 
                              FROM paquetes WHERE hora BETWEEN @desde AND @hasta ORDER BY hora DESC";
-                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    using (NpgsqlCommand cmd = new NpgsqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@desde", fechaDesde);
                         cmd.Parameters.AddWithValue("@hasta", fechaHasta);
-                        using (MySqlDataReader reader = cmd.ExecuteReader())
+                        using (NpgsqlDataReader reader = cmd.ExecuteReader())
                         using (StreamWriter sw = new StreamWriter(ruta, false, Encoding.UTF8))
                         {
                             // Anchos fijos para cada columna (ajústalos según tus necesidades)
@@ -1591,16 +1596,16 @@ namespace SistemaMonitorizacionRed
         {
             try
             {
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
                 {
                     conn.Open();
-                    string query = @"SELECT tipo, descripcion, severidad, ip_involucrada, timestamp 
-                             FROM alertas WHERE timestamp BETWEEN @desde AND @hasta ORDER BY timestamp DESC";
-                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    string query = @"SELECT tipo, descripcion, severidad, ip_involucrada, ""timestamp"" 
+                             FROM alertas WHERE ""timestamp"" BETWEEN @desde AND @hasta ORDER BY timestamp DESC";
+                    using (NpgsqlCommand cmd = new NpgsqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@desde", fechaDesde);
                         cmd.Parameters.AddWithValue("@hasta", fechaHasta);
-                        using (MySqlDataReader reader = cmd.ExecuteReader())
+                        using (NpgsqlDataReader reader = cmd.ExecuteReader())
                         using (StreamWriter sw = new StreamWriter(ruta, false, Encoding.UTF8))
                         {
                             int[] anchos = { 20, 60, 12, 18, 22 };
@@ -1678,16 +1683,16 @@ namespace SistemaMonitorizacionRed
         {
             try
             {
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
                 {
                     conn.Open();
                     string query = @"SELECT hora, ip_origen, ip_destino, protocolo, puerto_origen, puerto_destino, tamaño, informacion_adicional 
                                      FROM paquetes WHERE hora BETWEEN @desde AND @hasta ORDER BY hora DESC";
-                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    using (NpgsqlCommand cmd = new NpgsqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@desde", fechaDesde);
                         cmd.Parameters.AddWithValue("@hasta", fechaHasta);
-                        using (MySqlDataReader reader = cmd.ExecuteReader())
+                        using (NpgsqlDataReader reader = cmd.ExecuteReader())
                         {
                             PdfDocument document = new PdfDocument { Info = { Title = "Paquetes Capturados" } };
                             XFont titleFont = new XFont("Segoe UI", 16, XFontStyleEx.Bold);
@@ -1710,16 +1715,16 @@ namespace SistemaMonitorizacionRed
         {
             try
             {
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
                 {
                     conn.Open();
-                    string query = @"SELECT tipo, descripcion, severidad, ip_involucrada, timestamp 
-                                     FROM alertas WHERE timestamp BETWEEN @desde AND @hasta ORDER BY timestamp DESC";
-                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    string query = @"SELECT tipo, descripcion, severidad, ip_involucrada, ""timestamp"" 
+                                     FROM alertas WHERE ""timestamp"" BETWEEN @desde AND @hasta ORDER BY timestamp DESC";
+                    using (NpgsqlCommand cmd = new NpgsqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@desde", fechaDesde);
                         cmd.Parameters.AddWithValue("@hasta", fechaHasta);
-                        using (MySqlDataReader reader = cmd.ExecuteReader())
+                        using (NpgsqlDataReader reader = cmd.ExecuteReader())
                         {
                             PdfDocument document = new PdfDocument { Info = { Title = "Alertas de Seguridad" } };
                             XFont titleFont = new XFont("Segoe UI", 16, XFontStyleEx.Bold);
@@ -1741,7 +1746,7 @@ namespace SistemaMonitorizacionRed
         /// <summary>
         /// Dibuja una tabla profesional con colores del sistema, múltiples páginas y formato uniforme.
         /// </summary>
-        private void DrawMultiPageTable(PdfDocument document, MySqlDataReader reader,
+        private void DrawMultiPageTable(PdfDocument document, NpgsqlDataReader reader,
             XFont titleFont, XFont headerFont, XFont cellFont,
             string[] headers, double[] columnWidths, string reportTitle)
         {
@@ -2132,11 +2137,11 @@ namespace SistemaMonitorizacionRed
         {
             try
             {
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
                 {
                     conn.Open();
-                    string query = @"INSERT INTO latencias (timestamp, destino, latencia_ms, perdido) VALUES (@ts, @dest, @lat, @lost)";
-                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    string query = @"INSERT INTO latencias (""timestamp"", destino, latencia_ms, perdido) VALUES (@ts, @dest, @lat, @lost)";
+                    using (NpgsqlCommand cmd = new NpgsqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@ts", DateTime.Now);
                         cmd.Parameters.AddWithValue("@dest", destino);
@@ -2286,28 +2291,35 @@ namespace SistemaMonitorizacionRed
         /// </summary>
         public class AlertaHelper
         {
-            private string connectionString = "Server=localhost;Database=monitorizacion_red;Uid=root;Pwd=;";
-            public void GuardarAlerta(string tipo, string descripcion, string severidad, string ipInvolucrada = null)
+            private string connectionString = "Host=localhost;Database=monitorizacion_red;Username=postgres;Password=Theflashtemp*123";
+
+            public async Task GuardarAlertaAsync(string tipo, string descripcion, string severidad, string ipInvolucrada = null)
             {
-                try
+                await Task.Run(() =>
                 {
-                    using (MySqlConnection conn = new MySqlConnection(connectionString))
+                    try
                     {
-                        conn.Open();
-                        string query = @"INSERT INTO alertas (tipo, descripcion, severidad, ip_involucrada, timestamp) 
-                                         VALUES(@tipo, @descripcion, @severidad, @ip, @timestamp)";
-                        using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                        using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
                         {
-                            cmd.Parameters.AddWithValue("@tipo", tipo);
-                            cmd.Parameters.AddWithValue("@descripcion", descripcion);
-                            cmd.Parameters.AddWithValue("@severidad", severidad);
-                            cmd.Parameters.AddWithValue("@ip", ipInvolucrada ?? "");
-                            cmd.Parameters.AddWithValue("@timestamp", DateTime.Now);
-                            cmd.ExecuteNonQuery();
+                            conn.Open();
+                            string query = @"INSERT INTO alertas (tipo, descripcion, severidad, ip_involucrada, ""timestamp"") 
+                                     VALUES(@tipo, @descripcion, @severidad, @ip, @timestamp)";
+                            using (NpgsqlCommand cmd = new NpgsqlCommand(query, conn))
+                            {
+                                cmd.Parameters.AddWithValue("@tipo", tipo);
+                                cmd.Parameters.AddWithValue("@descripcion", descripcion);
+                                cmd.Parameters.AddWithValue("@severidad", severidad);
+                                cmd.Parameters.AddWithValue("@ip", ipInvolucrada ?? "");
+                                cmd.Parameters.AddWithValue("@timestamp", DateTime.Now);
+                                cmd.ExecuteNonQuery();
+                            }
                         }
                     }
-                }
-                catch (Exception ex) { System.Diagnostics.Debug.WriteLine("Error guardando alerta: " + ex.Message); }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine("Error guardando alerta: " + ex.Message);
+                    }
+                });
             }
         }
 

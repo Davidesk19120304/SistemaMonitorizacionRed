@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
-using MySql.Data.MySqlClient;
+using Npgsql;
+using NpgsqlTypes;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -21,7 +22,7 @@ namespace SistemaMonitorizacionRed
         private Button btnValidarPIN;
         private Panel panelLogin;
 
-        private string connectionString = "Server=localhost;Database=monitorizacion_red;Uid=root;Pwd=;";
+        private string connectionString = "Host=localhost;Database=monitorizacion_red;Username=postgres;Password=Theflashtemp*123";
         private string usuarioLogeado;
         private bool esNuevoPIN = false;
 
@@ -176,7 +177,7 @@ namespace SistemaMonitorizacionRed
         {
             try
             {
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
                 {
                     conn.Open();
                     string createTable = @"
@@ -187,17 +188,17 @@ namespace SistemaMonitorizacionRed
                     pin VARCHAR(64) NULL,
                     rol VARCHAR(20) DEFAULT 'admin'
                 )";
-                    using (MySqlCommand cmd = new MySqlCommand(createTable, conn))
+                    using (NpgsqlCommand cmd = new NpgsqlCommand(createTable, conn))
                         cmd.ExecuteNonQuery();
 
                     string checkAdmin = "SELECT COUNT(*) FROM usuarios";
-                    using (MySqlCommand cmd = new MySqlCommand(checkAdmin, conn))
+                    using (NpgsqlCommand cmd = new NpgsqlCommand(checkAdmin, conn))
                     {
                         int count = Convert.ToInt32(cmd.ExecuteScalar());
                         if (count == 0)
                         {
                             string insertAdmin = "INSERT INTO usuarios (usuario, contraseña, rol) VALUES ('admin', @hash, 'admin')";
-                            using (MySqlCommand cmdInsert = new MySqlCommand(insertAdmin, conn))
+                            using (NpgsqlCommand cmdInsert = new NpgsqlCommand(insertAdmin, conn))
                             {
                                 cmdInsert.Parameters.AddWithValue("@hash", SHA256("admin"));
                                 cmdInsert.ExecuteNonQuery();
@@ -225,17 +226,17 @@ namespace SistemaMonitorizacionRed
 
             string hash = SHA256(pass);
 
-            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
             {
                 conn.Open();
                 string query = @"SELECT usuario, pin FROM usuarios 
                                  WHERE usuario = @entrada 
                                  AND contraseña = @hash";
-                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                using (NpgsqlCommand cmd = new NpgsqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@entrada", entrada);
                     cmd.Parameters.AddWithValue("@hash", hash);
-                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    using (NpgsqlDataReader reader = cmd.ExecuteReader())
                     {
                         if (reader.Read())
                         {
@@ -277,16 +278,16 @@ namespace SistemaMonitorizacionRed
                 MessageBox.Show("El PIN debe ser exactamente 4 dígitos numéricos.");
                 return;
             }
-
+           
             string hash = SHA256(pin);
 
             if (esNuevoPIN)
             {
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
                 {
                     conn.Open();
                     string query = "UPDATE usuarios SET pin = @hash WHERE usuario = @usr";
-                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    using (NpgsqlCommand cmd = new NpgsqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@hash", hash);
                         cmd.Parameters.AddWithValue("@usr", usuarioLogeado);
@@ -299,11 +300,11 @@ namespace SistemaMonitorizacionRed
             else
             {
                 string hashGuardado;
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
                 {
                     conn.Open();
                     string query = "SELECT pin FROM usuarios WHERE usuario = @usr";
-                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    using (NpgsqlCommand cmd = new NpgsqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@usr", usuarioLogeado);
                         hashGuardado = cmd.ExecuteScalar()?.ToString();
