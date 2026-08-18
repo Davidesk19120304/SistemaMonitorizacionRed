@@ -53,7 +53,7 @@ Una aplicación de escritura para monitoreo de tráfico de rojo en tiempo real y
 |------------|---------|
 | C# (.Marco NET 4.7.2) | Lenguaje de programación principal |
 | Tapa afilada | Biblioteca de captura de paquetes |
-| PaqueteDotNet | Decodificación de paquetes |
+ Detección de anomalíasUna aplicación de escritura para monitoreo de tráfico de rojo en tiempo real y detección de anomalías, enfermedad para pequeñas empresas, instituciones educativas y cibercafés con recursos limitados.| Decodificación de paquetes |
 | Npgsql | Conector PostgreSQL |
 | Gráficos en vivo | Gráficos en tiempo real |
 | Pdf nítido | Generación de informes en formato PDF |
@@ -81,7 +81,7 @@ Download and install from [npcap.com](https://npcap.com) with "WinPcap API-compa
 Download from [postgresql.org](https://www.postgresql.org/download/windows/) and create a database named `monitorizacion_red`.
 
  (compatible con WPS Office) 3. Configure the connection
-Open `App.config` and set your connection string:
+Abierto `Aplicación.config` y configure su cadena de conexión:
 
 ```xml
 <connectionStrings>
@@ -90,8 +90,8 @@ Open `App.config` and set your connection string:
 </connectionStrings>
 ```
 
-### 4. Ejecute la aplicación
-Ejecutar `SistemaMonitorizaciónRed.exe`. En el primer lanzamiento, el sistema creará automáticamente las tablas necesarias.
+### 4. Ejecutar la aplicación
+Ejecutar `SistemaMonitorizaciónRed.exe`. En el primer lanzamiento, el sistema crea automáticamente las tablas necesarias.
 
 ## 👤 Credenciales predeterminadas
 
@@ -115,14 +115,14 @@ El sistema incluye un script de prueba de carga (`Prueba de carga.ps1`) que simu
 
 ```powershell
 .\LoadTest.ps1 -targetIP 127.0.0.1 -duraciónSegundos 30 -paquetasPorSegundo 500
-```
+ PostgreSQL 12+ (o XAMPP con MySQL para desarrollo)
 
 ## 📁 Estructura del proyecto
 
 ```
 SistemaMonitorizaciónRojo/
 ├── FrmMain.cs # Interfaz de monitoreo principal
-├── FrmLogin.cs # Iniciar sesión con autenticación PIN
+ (compatible con WPS Office) 3. Configurar la conexión
 ├── HistorialAlertas.cs # Visor de histórico de alertas
 ├── FrmConfiguraciónAlertas.cs # Configuración de alerta
 xml
@@ -141,6 +141,6 @@ Este proyecto tiene fines educativos. Todos los derechos reservados.
 
 ## 👤 Autor
 
-**Guillermo David Adrianza Díaz**
+Guillermo David Adrianza Díaz
 - Graduado en Ingeniería de Sistemas
 - Cabimas, Venezuela
