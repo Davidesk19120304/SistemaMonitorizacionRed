@@ -1,0 +1,63 @@
+# ============================================
+# ARCHIVOS DE CONFIGURACIÓN SENSIBLE
+# ============================================
+
+# Configuración de aplicación (contiene contraseñas)
+App.config
+appsettings.json
+appsettings.*.json
+
+# Archivos de entorno (API keys, tokens, secretos)
+.env
+.env.*
+!.env.example
+
+# Secretos y credenciales
+secrets.json
+secrets.*.json
+*.secret
+*.secrets
+
+# Certificados y claves
+*.pfx
+*.pem
+*.key
+*.crt
+*.cer
+
+# ============================================
+# ARCHIVOS DE VISUAL STUDIO
+# ============================================
+
+# Carpeta .vs (configuración local de VS)
+.vs/
+
+# Archivos temporales
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# ============================================
+# CARPETAS DE COMPILACIÓN
+# ============================================
+
+# Carpetas bin y obj
+bin/
+obj/
+[Bb]in/
+[Oo]bj/
+
+# Paquetes locales de NuGet (opcional, depende si usas packages.config)
+packages/
+
+# ============================================
+# ARCHIVOS DE RESPALDO Y TEMPORALES
+# ============================================
+
+*.log
+*.tmp
+*.temp
+*.bak
+*.swp
+*~

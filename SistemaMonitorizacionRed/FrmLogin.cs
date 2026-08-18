@@ -4,6 +4,7 @@ using Npgsql;
 using NpgsqlTypes;
 using System.Security.Cryptography;
 using System.Text;
+using System.Configuration;
 
 namespace SistemaMonitorizacionRed
 {
@@ -22,7 +23,8 @@ namespace SistemaMonitorizacionRed
         private Button btnValidarPIN;
         private Panel panelLogin;
 
-        private string connectionString = "Host=localhost;Database=monitorizacion_red;Username=postgres;Password=Theflashtemp*123";
+        private string connectionString = System.Configuration.ConfigurationManager
+     .ConnectionStrings["DefaultConnection"].ConnectionString;
         private string usuarioLogeado;
         private bool esNuevoPIN = false;
 

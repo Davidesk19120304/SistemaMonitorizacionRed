@@ -1,24 +1,25 @@
-﻿using LiveCharts;                          // SeriesCollection, LineSeries, Axis, LegendLocation
-using LiveCharts.Wpf;                      // CartesianChart (usa internamente System.Windows.Media.Brushes)
-using PacketDotNet;                        // Parseo y extracción de paquetes (IP, TCP, UDP, ICMP, IGMP)
-using PdfSharp.Drawing;                     // XGraphics, XFont, XBrushes, XPens, XStringFormats, XColor
-using PdfSharp.Fonts;                       // IFontResolver, FontResolverInfo, GlobalFontSettings
-using PdfSharp.Pdf;                         // PdfDocument, PdfPage, PageSize, PageOrientation
-using SharpPcap;                           // Dispositivos de captura y modos de apertura
-using SharpPcap.LibPcap;                   // Implementación concreta para Windows (Npcap)
+﻿using LiveCharts;                          
+using LiveCharts.Wpf;                      
+using PacketDotNet;                        
+using PdfSharp.Drawing;                     
+using PdfSharp.Fonts;                       
+using PdfSharp.Pdf;                         
+using SharpPcap;                           
+using SharpPcap.LibPcap;                   
 using System;
 using Microsoft.VisualBasic;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;                            // Path, File, StreamWriter
+using System.IO;                            
 using System.Linq;
-using System.Net.NetworkInformation;        // NetworkInterface, Ping, IPStatus
-using System.Runtime.InteropServices;       // DllImport, Marshal, StructLayout
+using System.Net.NetworkInformation;        
+using System.Runtime.InteropServices;       
 using System.Text;
 using System.Windows.Forms;
 using Npgsql;
 using NpgsqlTypes;
 using System.Threading.Tasks;
+using System.Configuration;
 
 namespace SistemaMonitorizacionRed
 {
@@ -102,7 +103,8 @@ namespace SistemaMonitorizacionRed
         private bool procesandoCola = false;
 
         // --- Conexión a BD
-        private string connectionString = "Host=localhost;Database=monitorizacion_red;Username=postgres;Password=Theflashtemp*123";
+        private string connectionString = System.Configuration.ConfigurationManager
+    .ConnectionStrings["DefaultConnection"].ConnectionString;
 
         #endregion
 
@@ -2291,7 +2293,8 @@ namespace SistemaMonitorizacionRed
         /// </summary>
         public class AlertaHelper
         {
-            private string connectionString = "Host=localhost;Database=monitorizacion_red;Username=postgres;Password=Theflashtemp*123";
+            private string connectionString = System.Configuration.ConfigurationManager
+    .ConnectionStrings["DefaultConnection"].ConnectionString;
 
             public async Task GuardarAlertaAsync(string tipo, string descripcion, string severidad, string ipInvolucrada = null)
             {

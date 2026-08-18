@@ -5,12 +5,14 @@ using System.Windows.Forms;
 using Npgsql;
 using NpgsqlTypes;
 using System.Collections.Generic;
+using System.Configuration;
 
 namespace SistemaMonitorizacionRed
 {
     public partial class HistorialAlertas : Form
     {
-        private string connectionString = "Server=localhost;Database=monitorizacion_red;Uid=root;Pwd=;";
+        private string connectionString = System.Configuration.ConfigurationManager
+    .ConnectionStrings["DefaultConnection"].ConnectionString;
         public bool ModoOscuro { get; set; } = false;
         public HistorialAlertas()
         {
